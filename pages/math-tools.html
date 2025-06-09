@@ -1,0 +1,3338 @@
+<!DOCTYPE html>
+<!-- you have to upload -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tools - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/math-tools.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Math and Plotting Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/function-plot/1.22.8/function-plot.min.js"></script>
+    
+    <!-- Application Scripts -->
+     <script src="../js/matrix-calculator.js" defer></script>
+    <script src="../js/scientific-calculator.js" defer></script> 
+    <script src="../js/math-tools.js" defer></script>
+    <script src="../js/function-plotter.js" defer></script>
+    <script src="../js/statistics-calculator.js" defer></script>
+    <style>
+        /* Tool Card Styles */
+        .tool-card {
+            display: none;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            z-index: 2;
+        }
+
+        /* Scientific Calculator Styles */
+        .calculator-display {
+            margin-bottom: 15px;
+        }
+
+        .calculator-display input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            text-align: right;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Inter', monospace;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .scientific-functions {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .calc-btn {
+            padding: 12px;
+            font-size: 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .calc-btn:hover {
+            background-color: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .calc-btn:active {
+            transform: translateY(1px);
+        }
+
+        .calc-btn[data-action="operator"] {
+            background-color: var(--input-bg);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .calc-btn[data-action="equals"] {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .calc-btn[data-action="equals"]:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .calc-btn[data-action="clear"],
+        .calc-btn[data-action="backspace"] {
+            background-color: var(--danger-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .calc-btn[data-action="clear"]:hover,
+        .calc-btn[data-action="backspace"]:hover {
+            background-color: var(--danger-dark);
+        }
+
+        .calc-btn[data-action="function"] {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .calc-btn[data-action="function"]:hover {
+            background-color: var(--hover-bg);
+        }
+
+        /* Input Styles */
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        /* Basic input styling */
+        input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        
+        /* Remove default number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Number input styling */
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        
+        .input-group input[type="number"] {
+            width: 100px;
+        }
+
+        .input-group input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Quick Navigation Styles */
+        .quick-nav {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Result Display */
+        .result-display {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            /* color: black; */
+        }
+
+        /* Matrix Styles */
+        .matrix-input {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .matrix-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .matrix-cell input {
+            width: 60px;
+            text-align: center;
+        }
+
+        /* Graph Styles */
+        .graph-container {
+            width: 100%;
+            height: 300px;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        /* Formula Display */
+        .formula-display {
+            font-family: 'KaTeX_Math', serif;
+            font-size: 1.2em;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        /* Add these CSS variables to your root styles */
+        :root {
+            --danger-color: #dc3545;
+            --danger-dark: #c82333;
+            --hover-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dark mode specific adjustments */
+        [data-theme="dark"] .calc-btn {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .calc-btn[data-action="operator"] {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .calc-btn[data-action="function"] {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .calculator-display input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .calc-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Function Plotter Styles */
+        .function-plotter {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .function-plotter .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .function-plotter input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Inter', monospace;
+        }
+
+        .function-plotter .plot-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            margin-top: 1rem;
+        }
+
+        .function-plotter .plot-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .function-plotter .plot-controls input[type="number"] {
+            width: 100px;
+        }
+
+        .function-plotter .error-message {
+            color: var(--danger-color);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+
+        /* // my new Style for Qick Navigarion */
+
+        /* Quick Navigation */
+        .quick-nav {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        textarea{
+            color: black;
+        }
+/* 
+        select{
+            color: black;
+        }
+
+        option{
+            color: black;
+        } */
+
+         /* input{
+            color: black;
+         } */
+
+         input{
+            color: black;
+         }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <!-- <a href="file-conversion.html">File Conversion</a> -->
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="math-tools.html" class="active">Math Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Mathematical Tools</h1>
+            <p>Powerful calculators and mathematical utilities</p>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <h3 style="color: green !important; margin-bottom: 15px;"> Please choose an option ==></h3>
+            <div class="quick-nav-links">
+                <a href="#calculator"><i class="fas fa-calculator"></i> Scientific Calculator</a>
+                <a href="#matrix-calculator"><i class="fas fa-table"></i> Matrix Calculator</a>
+                <a href="#equation-solver"><i class="fas fa-equals"></i> Equation Solver</a>
+                <a href="#function-plotter"><i class="fas fa-chart-line"></i> Function Plotter</a>
+                <a href="#statistics"><i class="fas fa-chart-bar"></i> Statistics Calculator</a>
+                <!-- <a href="#number-converter"><i class="fas fa-exchange-alt"></i> Number Converter</a> -->
+                <!-- <a href="#prime-factorization"><i class="fas fa-sort-numeric-down"></i> Prime Factorization</a>
+                <a href="#gcd-lcm"><i class="fas fa-divide"></i> GCD & LCM Calculator</a>
+                <a href="#complex-numbers"><i class="fas fa-square-root-alt"></i> Complex Numbers</a>
+                <a href="#vector-calculator"><i class="fas fa-vector-square"></i> Vector Calculator</a>
+                <a href="#derivative-calculator"><i class="fas fa-superscript"></i> Derivative Calculator</a>
+                <a href="#integral-calculator"><i class="fas fa-integral"></i> Integral Calculator</a>
+                <a href="#series-calculator"><i class="fas fa-infinity"></i> Series Calculator</a>
+                <a href="#probability-calculator"><i class="fas fa-dice"></i> Probability Calculator</a>
+                <a href="#geometry-calculator"><i class="fas fa-draw-polygon"></i> Geometry Calculator</a>
+                <a href="#trigonometry"><i class="fas fa-sin"></i> Trigonometry Calculator</a>
+                <a href="#unit-converter"><i class="fas fa-ruler"></i> Unit Converter</a>
+                <a href="#percentage-calculator"><i class="fas fa-percent"></i> Percentage Calculator</a>
+                <a href="#sequence-calculator"><i class="fas fa-sort-numeric-up"></i> Sequence Calculator</a>
+                <a href="#polynomial-calculator"><i class="fas fa-superscript"></i> Polynomial Calculator</a>
+                <a href="#logarithm-calculator"><i class="fas fa-log"></i> Logarithm Calculator</a>
+                <a href="#exponential-calculator"><i class="fas fa-superscript"></i> Exponential Calculator</a>
+                <a href="#fraction-calculator"><i class="fas fa-fraction"></i> Fraction Calculator</a>
+                <a href="#permutation-combination"><i class="fas fa-random"></i> Permutation & Combination</a>
+                <a href="#binary-calculator"><i class="fas fa-binary"></i> Binary Calculator</a>
+                <a href="#hexadecimal-calculator"><i class="fas fa-hashtag"></i> Hexadecimal Calculator</a>
+                <a href="#octal-calculator"><i class="fas fa-8"></i> Octal Calculator</a>
+                <a href="#roman-numeral"><i class="fas fa-roman-numeral"></i> Roman Numeral Converter</a>
+                <a href="#base-converter"><i class="fas fa-exchange-alt"></i> Base Converter</a>
+                <a href="#random-number"><i class="fas fa-dice-d20"></i> Random Number Generator</a>
+                <a href="#number-formatter"><i class="fas fa-text-width"></i> Number Formatter</a>
+                <a href="#scientific-notation"><i class="fas fa-flask"></i> Scientific Notation</a>
+                <a href="#significant-figures"><i class="fas fa-hashtag"></i> Significant Figures</a>
+                <a href="#rounding-calculator"><i class="fas fa-circle"></i> Rounding Calculator</a>
+                <a href="#percentage-change"><i class="fas fa-percentage"></i> Percentage Change</a>
+                <a href="#ratio-calculator"><i class="fas fa-divide"></i> Ratio Calculator</a>
+                <a href="#proportion-calculator"><i class="fas fa-equals"></i> Proportion Calculator</a>
+                <a href="#mean-median-mode"><i class="fas fa-chart-line"></i> Mean, Median, Mode</a>
+                <a href="#standard-deviation"><i class="fas fa-sigma"></i> Standard Deviation</a>
+                <a href="#variance-calculator"><i class="fas fa-square"></i> Variance Calculator</a>
+                <a href="#correlation-calculator"><i class="fas fa-link"></i> Correlation Calculator</a>
+                <a href="#regression-calculator"><i class="fas fa-chart-scatter"></i> Regression Calculator</a>
+                <a href="#confidence-interval"><i class="fas fa-chart-area"></i> Confidence Interval</a>
+                <a href="#hypothesis-testing"><i class="fas fa-check-double"></i> Hypothesis Testing</a>
+                <a href="#chi-square"><i class="fas fa-square-root-alt"></i> Chi-Square Calculator</a>
+                <a href="#t-test"><i class="fas fa-t"></i> T-Test Calculator</a>
+                <a href="#z-test"><i class="fas fa-z"></i> Z-Test Calculator</a>
+                <a href="#anova-calculator"><i class="fas fa-table"></i> ANOVA Calculator</a>
+                <a href="#f-test"><i class="fas fa-f"></i> F-Test Calculator</a>
+                <a href="#p-value-calculator"><i class="fas fa-p"></i> P-Value Calculator</a>
+                <a href="#critical-value"><i class="fas fa-exclamation"></i> Critical Value</a>
+                <a href="#sample-size"><i class="fas fa-users"></i> Sample Size Calculator</a>
+                <a href="#margin-of-error"><i class="fas fa-plus-minus"></i> Margin of Error</a>
+                <a href="#power-analysis"><i class="fas fa-bolt"></i> Power Analysis</a> -->
+                <!-- <a href="#effect-size"><i class="fas fa-arrows-alt-h"></i> Effect Size Calculator</a> -->
+                <!-- <a href="#bayes-calculator"><i class="fas fa-brain"></i> Bayes Calculator</a>
+                <a href="#probability-distribution"><i class="fas fa-chart-pie"></i> Probability Distribution</a>
+                <a href="#normal-distribution"><i class="fas fa-bell"></i> Normal Distribution</a>
+                <a href="#binomial-distribution"><i class="fas fa-dice-two"></i> Binomial Distribution</a>
+                <a href="#poisson-distribution"><i class="fas fa-infinity"></i> Poisson Distribution</a>
+                <a href="#exponential-distribution"><i class="fas fa-chart-line"></i> Exponential Distribution</a>
+                <a href="#uniform-distribution"><i class="fas fa-square"></i> Uniform Distribution</a>
+                <a href="#geometric-distribution"><i class="fas fa-shapes"></i> Geometric Distribution</a>
+                <a href="#hypergeometric-distribution"><i class="fas fa-cubes"></i> Hypergeometric Distribution</a>
+                <a href="#weibull-distribution"><i class="fas fa-wave-square"></i> Weibull Distribution</a>
+                <a href="#gamma-distribution"><i class="fas fa-chart-bar"></i> Gamma Distribution</a>
+                <a href="#beta-distribution"><i class="fas fa-chart-area"></i> Beta Distribution</a>
+                <a href="#chi-square-distribution"><i class="fas fa-square-root-alt"></i> Chi-Square Distribution</a>
+                <a href="#f-distribution"><i class="fas fa-f"></i> F-Distribution</a>
+                <a href="#t-distribution"><i class="fas fa-t"></i> T-Distribution</a>
+                <a href="#z-distribution"><i class="fas fa-z"></i> Z-Distribution</a> -->
+            </div>
+        </section>
+
+        <section class="tools-section">
+            <div class="tools-grid">
+                <!-- Prime Factorization -->
+                <div class="tool-card" id="prime-factorization">
+                    <h3><i class="fas fa-calculator"></i> Prime Factorization</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="factorize-input">Enter a number (greater than 1):</label>
+                            <input style="color: black;" type="number" id="factorize-input" class="number-input" min="2" placeholder="e.g., 42">
+                        </div>
+                        <button id="factorize" class="btn">Factorize</button>
+                        <div id="factorization-result" class="result-display"></div>
+                    </div>
+                </div>
+                
+                <!-- Scientific Calculator -->
+                <div class="tool-card" id="calculator">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-calculator"></i> Scientific Calculator</h3>
+                        <p>Advanced calculator with scientific functions</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="calculator-display">
+                            <input type="text" id="calculator-display" readonly>
+                        </div>
+                        <div class="scientific-functions">
+                            <button class="calc-btn" data-action="function">sin</button>
+                            <button class="calc-btn" data-action="function">cos</button>
+                            <button class="calc-btn" data-action="function">tan</button>
+                            <button class="calc-btn" data-action="function">sqrt</button>
+                            <button class="calc-btn" data-action="function">log</button>
+                            <button class="calc-btn" data-action="function">ln</button>
+                            <button class="calc-btn" data-action="operator">^</button>
+                            <button class="calc-btn" data-action="constant">π</button>
+                            <button class="calc-btn" data-action="constant">e</button>
+                            <button class="calc-btn" data-action="operator">%</button>
+                        </div>
+                        <div class="calculator-buttons">
+                            <button class="calc-btn" data-action="clear">C</button>
+                            <button class="calc-btn" data-action="backspace">⌫</button>
+                            <button class="calc-btn" data-action="parenthesis">(</button>
+                            <button class="calc-btn" data-action="parenthesis">)</button>
+                            
+                            <button class="calc-btn" data-action="number">7</button>
+                            <button class="calc-btn" data-action="number">8</button>
+                            <button class="calc-btn" data-action="number">9</button>
+                            <button class="calc-btn" data-action="operator">÷</button>
+                            
+                            <button class="calc-btn" data-action="number">4</button>
+                            <button class="calc-btn" data-action="number">5</button>
+                            <button class="calc-btn" data-action="number">6</button>
+                            <button class="calc-btn" data-action="operator">×</button>
+                            
+                            <button class="calc-btn" data-action="number">1</button>
+                            <button class="calc-btn" data-action="number">2</button>
+                            <button class="calc-btn" data-action="number">3</button>
+                            <button class="calc-btn" data-action="operator">-</button>
+                            
+                            <button class="calc-btn" data-action="number">0</button>
+                            <button class="calc-btn" data-action="decimal">.</button>
+                            <button class="calc-btn" data-action="equals">=</button>
+                            <button class="calc-btn" data-action="operator">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sequence Calculator -->
+                <div class="tool-card" id="sequence-calculator">
+                    <h3>Sequence Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <div class="sequence-type">
+                                <label for="sequence-type">Sequence Type</label>
+                                <select id="sequence-type">
+                                    <option value="arithmetic">Arithmetic Sequence</option>
+                                    <option value="geometric">Geometric Sequence</option>
+                                </select>
+                            </div>
+                            <div class="sequence-inputs">
+                                <div class="sequence-input">
+                                    <label for="first-term">First Term</label>
+                                    <input type="number" id="first-term" placeholder="Enter first term">
+                                </div>
+                                <div class="sequence-input">
+                                    <label for="common-diff">Common Difference/Ratio</label>
+                                    <input type="number" id="common-diff" placeholder="Enter common difference/ratio">
+                                </div>
+                                <div class="sequence-input">
+                                    <label for="num-terms">Number of Terms</label>
+                                    <input type="number" id="num-terms" placeholder="Enter number of terms">
+                                </div>
+                            </div>
+                            <button id="calculate-sequence" class="btn">Calculate</button>
+                        </div>
+                        <div id="sequence-result" class="result"></div>
+                    </div>
+                </div>
+
+                <!-- Polynomial Calculator -->
+                  <div class="tool-card" id="polynomial-calculator"> 
+                    <h3><i class="fas fa-superscript"></i> Polynomial Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="polynomial-coefficients">Coefficients (comma-separated):</label>
+                            <input type="text" id="polynomial-coefficients" placeholder="e.g., 1,2,3 for x²+2x+3">
+                        </div>
+                        <div class="input-group">
+                            <label for="polynomial-x">Value of x:</label>
+                            <input type="number" id="polynomial-x" step="any" placeholder="Enter value of x">
+                        </div>
+                        <button id="calculate-polynomial" class="btn">Calculate</button>
+                        <div id="polynomial-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Logarithm Calculator -->
+                <div class="tool-card" id="logarithm-calculator">
+                    <h3><i class="fas fa-log"></i> Logarithm Calculator</h3>
+                    <div class="tool-content">
+                        <div class="logarithm-inputs">
+                            <div class="logarithm-input">
+                                <label for="log-number">Number</label>
+                                <input type="number" id="log-number" step="any" placeholder="Enter number">
+                            </div>
+                            <div class="logarithm-input">
+                                <label for="log-base">Base</label>
+                                <input type="number" id="log-base" step="any" placeholder="Enter base">
+                            </div>
+                        </div>
+                        <button id="calculate-logarithm" class="btn">Calculate</button>
+                        <div id="logarithm-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Exponential Calculator -->
+                <div class="tool-card" id="exponential-calculator">
+                    <h3><i class="fas fa-superscript"></i> Exponential Calculator</h3>
+                    <div class="tool-content">
+                        <div class="exponential-inputs">
+                            <div class="exponential-input">
+                                <label for="exponential-base">Base</label>
+                                <input type="number" id="exponential-base" step="any" placeholder="Enter base">
+                            </div>
+                            <div class="exponential-input">
+                                <label for="exponential-exponent">Exponent</label>
+                                <input type="number" id="exponential-exponent" step="any" placeholder="Enter exponent">
+                            </div>
+                        </div>
+                        <button id="calculate-exponential" class="btn">Calculate</button>
+                        <div id="exponential-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Fraction Calculator -->
+                <div class="tool-card" id="fraction-calculator">
+                    <h3><i class="fas fa-fraction"></i> Fraction Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="fraction-operation">Operation:</label>
+                            <select id="fraction-operation">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (×)</option>
+                                <option value="divide">Division (÷)</option>
+                            </select>
+                        </div>
+                        <div class="fraction-inputs">
+                            <div class="fraction-group">
+                                <input style="color: black;" type="number" id="fraction1-numerator" placeholder="Numerator 1">
+                                <div class="fraction-line"></div>
+                                <input  style="color: black;" type="number" id="fraction1-denominator" placeholder="Denominator 1">
+                            </div>
+                            <div class="fraction-group">
+                                <input style="color: black;" type="number" id="fraction2-numerator" placeholder="Numerator 2">
+                                <div class="fraction-line"></div>
+                                <input style="color: black;" type="number" id="fraction2-denominator" placeholder="Denominator 2">
+                            </div>
+                        </div>
+                        <button id="calculate-fraction" class="btn">Calculate</button>
+                        <div id="fraction-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Permutation & Combination Calculator -->
+                <div class="tool-card" id="permutation-combination">
+                    <h3><i class="fas fa-sort-numeric-down"></i> Permutation & Combination Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="perm-comb-type">Calculation Type:</label>
+                            <select id="perm-comb-type">
+                                <option value="permutation">Permutation (nPr)</option>
+                                <option value="combination">Combination (nCr)</option>
+                            </select>
+                        </div>
+                        <div class="perm-comb-inputs">
+                            <div class="perm-comb-input">
+                                <label for="total-items">Total Items (n)</label>
+                                <input type="number" id="total-items" min="0" placeholder="Enter total items">
+                            </div>
+                            <div class="perm-comb-input">
+                                <label for="selected-items">Selected Items (r)</label>
+                                <input type="number" id="selected-items" min="0" placeholder="Enter selected items">
+                            </div>
+                        </div>
+                        <button id="calculate-perm-comb" class="btn">Calculate</button>
+                        <div id="perm-comb-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Binary Calculator -->
+                <div class="tool-card" id="binary-calculator">
+                    <h3><i class="fas fa-binary"></i> Binary Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="binary-operation">Operation:</label>
+                            <select id="binary-operation">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (×)</option>
+                                <option value="divide">Division (÷)</option>
+                                <option value="and">AND (&)</option>
+                                <option value="or">OR (|)</option>
+                                <option value="xor">XOR (^)</option>
+                                <option value="not">NOT (~)</option>
+                            </select>
+                        </div>
+                        <div class="binary-inputs">
+                            <div class="binary-input">
+                                <label for="binary-number1">First Number</label>
+                                <input type="text" id="binary-number1" placeholder="Enter binary number">
+                            </div>
+                            <div class="binary-input">
+                                <label for="binary-number2">Second Number</label>
+                                <input type="text" id="binary-number2" placeholder="Enter binary number">
+                            </div>
+                        </div>
+                        <button id="calculate-binary" class="btn">Calculate</button>
+                        <div id="binary-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Hexadecimal Calculator -->
+                <div class="tool-card" id="hexadecimal-calculator">
+                    <h3><i class="fas fa-hashtag"></i> Hexadecimal Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="hex-operation">Operation:</label>
+                            <select id="hex-operation">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (×)</option>
+                                <option value="divide">Division (÷)</option>
+                            </select>
+                        </div>
+                        <div class="hex-inputs">
+                            <div class="hex-input">
+                                <label for="hex-number1">First Number</label>
+                                <input type="text" id="hex-number1" placeholder="Enter hex number">
+                            </div>
+                            <div class="hex-input">
+                                <label for="hex-number2">Second Number</label>
+                                <input type="text" id="hex-number2" placeholder="Enter hex number">
+                            </div>
+                        </div>
+                        <button id="calculate-hex" class="btn">Calculate</button>
+                        <div id="hex-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Octal Calculator -->
+                <div class="tool-card" id="octal-calculator">
+                    <h3><i class="fas fa-8"></i> Octal Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="octal-operation">Operation:</label>
+                            <select id="octal-operation">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (×)</option>
+                                <option value="divide">Division (÷)</option>
+                            </select>
+                        </div>
+                        <div class="octal-inputs">
+                            <div class="octal-input">
+                                <label for="octal-number1">First Number</label>
+                                <input type="text" id="octal-number1" placeholder="Enter octal number">
+                            </div>
+                            <div class="octal-input">
+                                <label for="octal-number2">Second Number</label>
+                                <input type="text" id="octal-number2" placeholder="Enter octal number">
+                            </div>
+                        </div>
+                        <button id="calculate-octal" class="btn">Calculate</button>
+                        <div id="octal-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Roman Numeral Converter -->
+                <div class="tool-card" id="roman-numeral">
+                    <h3><i class="fas fa-roman-numeral"></i> Roman Numeral Converter</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="conversion-direction">Convert:</label>
+                            <select id="conversion-direction">
+                                <option value="to-roman">Decimal to Roman</option>
+                                <option value="to-decimal">Roman to Decimal</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="input-value">Input Value:</label>
+                            <input style="color: black;" type="text" id="input-value" placeholder="Enter value to convert">
+                        </div>
+                        <button id="convert-roman" class="btn">Convert</button>
+                        <div id="roman-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Base Converter -->
+                <div class="tool-card" id="base-converter">
+                    <h3><i class="fas fa-exchange-alt"></i> Base Converter</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="number-to-convert">Number:</label>
+                            <input type="text" id="number-to-convert" placeholder="Enter number">
+                        </div>
+                        <div class="base-inputs">
+                            <div class="base-input">
+                                <label for="from-base">From Base:</label>
+                                <select id="from-base">
+                                    <option value="2">Binary (Base-2)</option>
+                                    <option value="8">Octal (Base-8)</option>
+                                    <option value="10" selected>Decimal (Base-10)</option>
+                                    <option value="16">Hexadecimal (Base-16)</option>
+                                </select>
+                            </div>
+                            <div class="base-input">
+                                <label for="to-base">To Base:</label>
+                                <select id="to-base">
+                                    <option value="2">Binary (Base-2)</option>
+                                    <option value="8">Octal (Base-8)</option>
+                                    <option value="10">Decimal (Base-10)</option>
+                                    <option value="16" selected>Hexadecimal (Base-16)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="convert-base" class="btn">Convert</button>
+                        <div id="base-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Random Number Generator -->
+                <div class="tool-card" id="random-number">
+                    <h3><i class="fas fa-dice-d20"></i> Random Number Generator</h3>
+                    <div class="tool-content">
+                        <div class="random-inputs">
+                            <div class="random-input">
+                                <label for="min-value">Minimum Value:</label>
+                                <input type="number" id="min-value" step="any" placeholder="Enter minimum value">
+                            </div>
+                            <div class="random-input">
+                                <label for="max-value">Maximum Value:</label>
+                                <input type="number" id="max-value" step="any" placeholder="Enter maximum value">
+                            </div>
+                            <div class="random-input">
+                                <label for="num-count">Number of Values:</label>
+                                <input type="number" id="num-count" min="1" value="1" placeholder="Enter count">
+                            </div>
+                            <div class="random-input">
+                                <label for="decimal-places">Decimal Places:</label>
+                                <input type="number" id="decimal-places" min="0" max="10" value="0" placeholder="Enter decimal places">
+                            </div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="allow-duplicates" checked>
+                                <span class="checkmark"></span>
+                                Allow Duplicates
+                            </label>
+                        </div>
+                        <button id="generate-random" class="btn">Generate</button>
+                        <div id="random-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Prime Number Calculator -->
+                <div class="tool-card" id="prime-number">
+                    <h3><i class="fas fa-sort-numeric-down"></i> Prime Number Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="prime-operation">Operation:</label>
+                            <select id="prime-operation">
+                                <option value="check">Check if Prime</option>
+                                <option value="next">Find Next Prime</option>
+                                <option value="previous">Find Previous Prime</option>
+                                <option value="factors">Prime Factors</option>
+                                <option value="range">Primes in Range</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="prime-input">Number:</label>
+                            <input type="number" id="prime-input" min="1" placeholder="Enter number">
+                        </div>
+                        <div class="input-group range-inputs" style="display: none;">
+                            <label for="prime-range-start">Start:</label>
+                            <input type="number" id="prime-range-start" min="1" placeholder="Enter start">
+                            <label for="prime-range-end">End:</label>
+                            <input type="number" id="prime-range-end" min="1" placeholder="Enter end">
+                        </div>
+                        <button id="calculate-prime" class="btn">Calculate</button>
+                        <div id="prime-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- GCD & LCM Calculator -->
+                <div class="tool-card" id="gcd-lcm">
+                    <h3><i class="fas fa-calculator"></i> GCD & LCM Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="gcd-lcm-numbers">Enter numbers (comma-separated):</label>
+                            <input style="color: black;" type="text" id="gcd-lcm-numbers" class="data-input" placeholder="e.g., 12, 18, 24">
+                        </div>
+                        <button id="calculate-gcd-lcm" class="calc-btn">Calculate</button>
+                        <div class="conversion-results">
+                            <div class="result-item">
+                                <span class="result-label">GCD:</span>
+                                <div class="result-group">
+                                    <span id="gcd-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="gcd-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">LCM:</span>
+                                <div class="result-group">
+                                    <span id="lcm-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="lcm-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complex Number Calculator -->
+                <div class="tool-card" id="complex-numbers">
+                    <h3><i class="fas fa-square-root-alt"></i> Complex Number Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="complex-operation">Operation:</label>
+                            <select id="complex-operation">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (×)</option>
+                                <option value="divide">Division (÷)</option>
+                                <!-- <option value="power">Power (^)</option> -->
+                                <!-- <option value="root">Root (√)</option> -->
+                            </select>
+                        </div>
+                        <div class="complex-inputs">
+                            <div class="input-group">
+                                <label>First Complex Number:</label>
+                                <input type="number" id="complex1-real" placeholder="Real part">
+                                <input type="number" id="complex1-imag" placeholder="Imaginary part">
+                            </div>
+                            <div class="input-group">
+                                <label>Second Complex Number:</label>
+                                <input type="number" id="complex2-real" placeholder="Real part">
+                                <input type="number" id="complex2-imag" placeholder="Imaginary part">
+                            </div>
+                            <div class="input-group power-input" style="display: none;">
+                                <label for="complex-power">Power:</label>
+                                <input type="number" id="complex-power" placeholder="Enter power">
+                            </div>
+                            <div class="input-group root-input" style="display: none;">
+                                <label for="complex-root">Root:</label>
+                                <input type="number" id="complex-root" placeholder="Enter root">
+                            </div>
+                        </div>
+                        <button id="calculate-complex" class="btn">Calculate</button>
+                        <div id="complex-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Vector Calculator -->
+                <div class="tool-card" id="vector-calculator">
+                    <h3><i class="fas fa-vector-square"></i> Vector Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="vector-operation">Operation:</label>
+                            <select id="vector-operation" class="data-input">
+                                <option value="add">Addition</option>
+                                <option value="subtract">Subtraction</option>
+                                <option value="dot">Dot Product</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="vector1">Vector 1 (comma-separated complex numbers):</label>
+                            <input style="color: black;"    type="text" id="vector1" class="data-input" placeholder="e.g., 1+4i, 2-3i, 5+0i">
+                        </div>
+                        <div class="input-group">
+                            <label for="vector2">Vector 2 (comma-separated complex numbers):</label>
+                            <input style="color: black;" type="text" id="vector2" class="data-input" placeholder="e.g., 2+3i, 1-4i, 3+2i">
+                        </div>
+                        <button id="calculate-vector" class="calc-btn">Calculate</button>
+                        <div class="conversion-results">
+                            <div class="result-item">
+                                <span class="result-label">Result:</span>
+                                <div class="result-group">
+                                    <span id="vector-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="vector-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Derivative Calculator -->
+                <div class="tool-card" id="derivative-calculator">
+                    <h3><i class="fas fa-superscript"></i> Derivative Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="derivative-function">Function:</label>
+                            <input style="color: black;" type="text" id="derivative-function" class="data-input" placeholder="e.g., x^2 + 2*x + 1">
+                        </div>
+                        <div class="input-group">
+                            <label for="derivative-variable">Variable:</label>
+                            <input style="color: black;" type="text" id="derivative-variable" class="data-input" placeholder="e.g., x" value="x">
+                        </div>
+                        <div class="input-group">
+                            <label for="derivative-order">Order:</label>
+                            <input style="color: black;" type="number" id="derivative-order" class="data-input" value="1" min="1">
+                        </div>
+                        <button id="calculate-derivative" class="calc-btn">Calculate</button>
+                        <div class="conversion-results">
+                            <div class="result-item">
+                                <span class="result-label">Result:</span>
+                                <div class="result-group">
+                                    <span id="derivative-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="derivative-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integral Calculator -->
+                <div class="tool-card" id="integral-calculator">
+                    <h3><i class="fas fa-integral"></i> Integral Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="integral-function">Function:</label>
+                            <input style="color: black;" type="text" id="integral-function" class="data-input" placeholder="e.g., x^2 + 2*x + 1">
+                        </div>
+                        <div class="input-group">
+                            <label for="integral-variable">Variable:</label>
+                            <input style="color: black;" type="text" id="integral-variable" class="data-input" placeholder="e.g., x" value="x">
+                        </div>
+                        <div class="input-group">
+                            <label for="integral-lower">Lower Bound (optional):</label>
+                            <input type="text" id="integral-lower" class="data-input" placeholder="e.g., 0">
+                        </div>
+                        <div class="input-group">
+                            <label for="integral-upper">Upper Bound (optional):</label>
+                            <input type="text" id="integral-upper" class="data-input" placeholder="e.g., 1">
+                        </div>
+                        <button id="calculate-integral" class="calc-btn">Calculate</button>
+                        <div class="conversion-results">
+                            <div class="result-item">
+                                <span class="result-label">Result:</span>
+                                <div class="result-group">
+                                    <span id="integral-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="integral-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Series Calculator -->
+                <div class="tool-card" id="series-calculator">
+                    <h3><i class="fas fa-infinity"></i> Series Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="series-type">Series Type:</label>
+                            <select id="series-type">
+                                <option value="arithmetic">Arithmetic Series</option>
+                                <option value="geometric">Geometric Series</option>
+                            </select>
+                        </div>
+                        <div class="series-inputs">
+                            <div class="input-group">
+                                <label for="series-first-term">First Term:</label>
+                                <input type="number" id="series-first-term" step="any" placeholder="Enter first term">
+                            </div>
+                            <div class="input-group">
+                                <label for="series-common-diff">Common Difference/Ratio:</label>
+                                <input type="number" id="series-common-diff" step="any" placeholder="Enter common difference/ratio">
+                            </div>
+                            <div class="input-group">
+                                <label for="series-terms">Number of Terms:</label>
+                                <input type="number" id="series-terms" min="1" placeholder="Enter number of terms">
+                            </div>
+                        </div>
+                        <button id="calculate-series" class="btn">Calculate</button>
+                        <div id="series-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Probability Calculator -->
+                <div class="tool-card" id="probability-calculator">
+                    <h3><i class="fas fa-dice"></i> Probability Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="probability-type">Type:</label>
+                            <select id="probability-type">
+                                <option value="basic">Basic Probability</option>
+                                <option value="conditional">Conditional Probability</option>
+                                <!-- <option value="binomial">Binomial Distribution</option>
+                                <option value="normal">Normal Distribution</option>
+                                <option value="poisson">Poisson Distribution</option> -->
+                            </select>
+                        </div>
+                        <div class="probability-inputs">
+                            <!-- Basic Probability -->
+                            <div class="basic-probability">
+                                <div class="input-group">
+                                    <label for="favorable-outcomes">Favorable Outcomes:</label>
+                                    <input type="number" id="favorable-outcomes" min="0" placeholder="Enter favorable outcomes">
+                                </div>
+                                <div class="input-group">
+                                    <label for="total-outcomes">Total Outcomes:</label>
+                                    <input type="number" id="total-outcomes" min="1" placeholder="Enter total outcomes">
+                                </div>
+                            </div>
+                            <!-- Conditional Probability -->
+                            <div class="conditional-probability" style="display: none;">
+                                <div class="input-group">
+                                    <label for="p-a">P(A):</label>
+                                    <input type="number" id="p-a" step="0.01" min="0" max="1" placeholder="Enter P(A)">
+                                </div>
+                                <div class="input-group">
+                                    <label for="p-b-given-a">P(B|A):</label>
+                                    <input type="number" id="p-b-given-a" step="0.01" min="0" max="1" placeholder="Enter P(B|A)">
+                                </div>
+                            </div>
+                            <!-- Binomial Distribution -->
+                            <div class="binomial-distribution" style="display: none;">
+                                <div class="input-group">
+                                    <label for="n-trials">Number of Trials (n):</label>
+                                    <input type="number" id="n-trials" min="1" placeholder="Enter number of trials">
+                                </div>
+                                <div class="input-group">
+                                    <label for="k-successes">Number of Successes (k):</label>
+                                    <input type="number" id="k-successes" min="0" placeholder="Enter number of successes">
+                                </div>
+                                <div class="input-group">
+                                    <label for="p-success">Probability of Success (p):</label>
+                                    <input type="number" id="p-success" step="0.01" min="0" max="1" placeholder="Enter probability">
+                                </div>
+                            </div>
+                            <!-- Normal Distribution -->
+                            <div class="normal-distribution" style="display: none;">
+                                <div class="input-group">
+                                    <label for="mean">Mean (μ):</label>
+                                    <input type="number" id="mean" step="any" placeholder="Enter mean">
+                                </div>
+                                <div class="input-group">
+                                    <label for="std-dev">Standard Deviation (σ):</label>
+                                    <input type="number" id="std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                                </div>
+                                <div class="input-group">
+                                    <label for="x-value">X Value:</label>
+                                    <input type="number" id="x-value" step="any" placeholder="Enter x value">
+                                </div>
+                            </div>
+                            <!-- Poisson Distribution -->
+                            <div class="poisson-distribution" style="display: none;">
+                                <div class="input-group">
+                                    <label for="lambda">Average Rate (λ):</label>
+                                    <input type="number" id="lambda" step="any" min="0" placeholder="Enter average rate">
+                                </div>
+                                <div class="input-group">
+                                    <label for="k-events">Number of Events (k):</label>
+                                    <input type="number" id="k-events" min="0" placeholder="Enter number of events">
+                                </div>
+                            </div>
+                        </div>
+                        <button id="calculate-probability" class="btn">Calculate</button>
+                        <div id="probability-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Geometry Calculator -->
+                <div class="tool-card" id="geometry-calculator">
+                    <h3><i class="fas fa-draw-polygon"></i> Geometry Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="geometry-shape">Shape:</label>
+                            <select id="geometry-shape">
+                                <option value="circle">Circle</option>
+                                <option value="rectangle">Rectangle</option>
+                                <option value="triangle">Triangle</option>
+                                <option value="square">Square</option>
+                                <option value="parallelogram">Parallelogram</option>
+                                <option value="trapezoid">Trapezoid</option>
+                                <option value="sphere">Sphere</option>
+                                <option value="cube">Cube</option>
+                                <option value="cylinder">Cylinder</option>
+                                <option value="cone">Cone</option>
+                            </select>
+                        </div>
+                        <div class="geometry-inputs">
+                            <!-- Circle -->
+                            <div class="circle-inputs">
+                                <div class="input-group">
+                                    <label for="radius">Radius:</label>
+                                    <input type="number" id="radius" step="any" min="0" placeholder="Enter radius">
+                                </div>
+                            </div>
+                            <!-- Rectangle -->
+                            <div class="rectangle-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="length">Length:</label>
+                                    <input type="number" id="length" step="any" min="0" placeholder="Enter length">
+                                </div>
+                                <div class="input-group">
+                                    <label for="width">Width:</label>
+                                    <input type="number" id="width" step="any" min="0" placeholder="Enter width">
+                                </div>
+                            </div>
+                            <!-- Triangle -->
+                            <div class="triangle-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="base">Base:</label>
+                                    <input type="number" id="base" step="any" min="0" placeholder="Enter base">
+                                </div>
+                                <div class="input-group">
+                                    <label for="height">Height:</label>
+                                    <input type="number" id="height" step="any" min="0" placeholder="Enter height">
+                                </div>
+                                <div class="input-group">
+                                    <label for="side-a">Side a:</label>
+                                    <input type="number" id="side-a" step="any" min="0" placeholder="Enter side a">
+                                </div>
+                                <div class="input-group">
+                                    <label for="side-b">Side b:</label>
+                                    <input type="number" id="side-b" step="any" min="0" placeholder="Enter side b">
+                                </div>
+                                <div class="input-group">
+                                    <label for="side-c">Side c:</label>
+                                    <input type="number" id="side-c" step="any" min="0" placeholder="Enter side c">
+                                </div>
+                            </div>
+                            <!-- Square -->
+                            <div class="square-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="side">Side:</label>
+                                    <input type="number" id="side" step="any" min="0" placeholder="Enter side length">
+                                </div>
+                            </div>
+                            <!-- Parallelogram -->
+                            <div class="parallelogram-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="base-par">Base:</label>
+                                    <input type="number" id="base-par" step="any" min="0" placeholder="Enter base">
+                                </div>
+                                <div class="input-group">
+                                    <label for="height-par">Height:</label>
+                                    <input type="number" id="height-par" step="any" min="0" placeholder="Enter height">
+                                </div>
+                            </div>
+                            <!-- Trapezoid -->
+                            <div class="trapezoid-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="base1">Base 1:</label>
+                                    <input type="number" id="base1" step="any" min="0" placeholder="Enter base 1">
+                                </div>
+                                <div class="input-group">
+                                    <label for="base2">Base 2:</label>
+                                    <input type="number" id="base2" step="any" min="0" placeholder="Enter base 2">
+                                </div>
+                                <div class="input-group">
+                                    <label for="height-trap">Height:</label>
+                                    <input type="number" id="height-trap" step="any" min="0" placeholder="Enter height">
+                                </div>
+                            </div>
+                            <!-- Sphere -->
+                            <div class="sphere-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="radius-sphere">Radius:</label>
+                                    <input type="number" id="radius-sphere" step="any" min="0" placeholder="Enter radius">
+                                </div>
+                            </div>
+                            <!-- Cube -->
+                            <div class="cube-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="edge">Edge Length:</label>
+                                    <input type="number" id="edge" step="any" min="0" placeholder="Enter edge length">
+                                </div>
+                            </div>
+                            <!-- Cylinder -->
+                            <div class="cylinder-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="radius-cyl">Radius:</label>
+                                    <input type="number" id="radius-cyl" step="any" min="0" placeholder="Enter radius">
+                                </div>
+                                <div class="input-group">
+                                    <label for="height-cyl">Height:</label>
+                                    <input type="number" id="height-cyl" step="any" min="0" placeholder="Enter height">
+                                </div>
+                            </div>
+                            <!-- Cone -->
+                            <div class="cone-inputs" style="display: none;">
+                                <div class="input-group">
+                                    <label for="radius-cone">Radius:</label>
+                                    <input type="number" id="radius-cone" step="any" min="0" placeholder="Enter radius">
+                                </div>
+                                <div class="input-group">
+                                    <label for="height-cone">Height:</label>
+                                    <input type="number" id="height-cone" step="any" min="0" placeholder="Enter height">
+                                </div>
+                            </div>
+                        </div>
+                        <button id="calculate-geometry" class="btn">Calculate</button>
+                        <div id="geometry-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Trigonometry Calculator -->
+                <div class="tool-card" id="trigonometry">
+                    <h3><i class="fas fa-sin"></i> Trigonometry Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group" style="display: flex; gap: 10px; align-items: center;">
+                            <div style="flex: 1;">
+                                <label for="trig-function">Function:</label>
+                                <select id="trig-function">
+                                    <option value="sin">Sine (sin)</option>
+                                    <option value="cos">Cosine (cos)</option>
+                                    <option value="tan">Tangent (tan)</option>
+                                    <option value="csc">Cosecant (csc)</option>
+                                    <option value="sec">Secant (sec)</option>
+                                    <option value="cot">Cotangent (cot)</option>
+                                    <option value="arcsin">Inverse Sine (arcsin)</option>
+                                    <option value="arccos">Inverse Cosine (arccos)</option>
+                                    <option value="arctan">Inverse Tangent (arctan)</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="angle">Angle:</label>
+                                <input type="number" id="angle" step="any" placeholder="Enter angle">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="trig-mode">Mode:</label>
+                                <select id="trig-mode">
+                                    <option value="degrees">Degrees</option>
+                                    <option value="radians">Radians</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="calculate-trig" class="btn">Calculate</button>
+                        <div id="trig-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Number Formatter -->
+                <div class="tool-card" id="number-formatter">
+                    <h3><i class="fas fa-text-width"></i> Number Formatter</h3>
+                    <div class="tool-content">
+                        <div class="format-inputs">
+                            <div class="format-input">
+                                <label for="number-to-format">Number:</label>
+                                <input type="text" id="number-to-format" placeholder="Enter a number">
+                            </div>
+                            <div class="format-input">
+                                <label for="format-type">Format Type:</label>
+                                <select id="format-type">
+                                    <option value="comma">Comma Separated</option>
+                                    <option value="currency">Currency</option>
+                                    <option value="percent">Percentage</option>
+                                    <option value="scientific">Scientific Notation</option>
+                                    <option value="compact">Compact</option>
+                                </select>
+                            </div>
+                            <div class="format-input">
+                                <label for="locale">Locale:</label>
+                                <select id="locale">
+                                    <option value="en-US">English (US)</option>
+                                    <option value="en-GB">English (UK)</option>
+                                    <option value="de-DE">German</option>
+                                    <option value="fr-FR">French</option>
+                                    <option value="es-ES">Spanish</option>
+                                    <option value="ja-JP">Japanese</option>
+                                    <option value="zh-CN">Chinese</option>
+                                    <option value="ar-SA">Arabic</option>
+                                    <option value="hi-IN">Hindi</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="format-options">
+                            <div class="format-option">
+                                <label for="decimal-places">Decimal Places:</label>
+                                <input type="number" id="decimal-places" min="0" max="20" value="2">
+                            </div>
+                            <div class="format-option">
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" id="use-grouping" checked>
+                                    <span class="custom-checkbox"></span>
+                                    Use Grouping
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="format-number" class="tool-button">Format</button>
+                        </div>
+                        
+                        <div id="format-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Scientific Notation -->
+                <div class="tool-card" id="scientific-notation">
+                    <h3><i class="fas fa-flask"></i> Scientific Notation</h3>
+                    <div class="tool-content">
+                        <div class="sci-inputs">
+                            <div class="sci-input">
+                                <label for="sci-number">Number:</label>
+                                <input type="text" id="sci-number" placeholder="Enter number" style="color: black;">
+                            </div>
+                            <div class="sci-input">
+                                <label for="sci-precision">Precision:</label>
+                                <input type="number" id="sci-precision" min="0" max="20" value="2" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="convert-scientific" class="tool-button">Convert</button>
+                        </div>
+                        
+                        <div id="sci-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Significant Figures -->
+                <div class="tool-card" id="significant-figures">
+                    <h3><i class="fas fa-hashtag"></i> Significant Figures</h3>
+                    <div class="tool-content">
+                        <div class="sig-inputs">
+                            <div class="sig-input">
+                                <label for="sig-number">Number:</label>
+                                <input type="text" id="sig-number" placeholder="Enter number" style="color: black;">
+                            </div>
+                            <div class="sig-input">
+                                <label for="sig-figures">Number of Significant Figures:</label>
+                                <input type="number" id="sig-figures" min="1" max="20" value="3" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="sig-operation">
+                            <label for="sig-operation">Operation:</label>
+                            <select id="sig-operation" style="color: black;">
+                                <option value="round">Round to Significant Figures</option>
+                                <option value="count">Count Significant Figures</option>
+                                <option value="validate">Validate Significant Figures</option>
+                            </select>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="calculate-significant" class="tool-button">Calculate</button>
+                        </div>
+                        
+                        <div id="sig-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Rounding Calculator -->
+                <div class="tool-card" id="rounding-calculator">
+                    <h3><i class="fas fa-circle"></i> Rounding Calculator</h3>
+                    <div class="tool-content">
+                        <div class="round-inputs">
+                            <div class="round-input">
+                                <label for="round-number">Number:</label>
+                                <input type="text" id="round-number" placeholder="Enter number" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="round-options">
+                            <label for="round-mode">Rounding Mode:</label>
+                            <select id="round-mode" style="color: black;">
+                                <option value="nearest">Round to Nearest</option>
+                                <option value="up">Round Up</option>
+                                <option value="down">Round Down</option>
+                                <option value="toward-zero">Round Toward Zero</option>
+                                <option value="away-zero">Round Away from Zero</option>
+                            </select>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="calculate-rounding" class="tool-button">Calculate</button>
+                        </div>
+                        
+                        <div id="round-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Percentage Change -->
+                <div class="tool-card" id="percentage-change">
+                    <h3><i class="fas fa-percentage"></i> Percentage Change</h3>
+                    <div class="tool-content">
+                        <div class="percent-inputs">
+                            <div class="percent-input">
+                                <label for="initial-value">Initial Value:</label>
+                                <input type="text" id="initial-value" placeholder="Enter initial value" style="color: black;">
+                            </div>
+                            <div class="percent-input">
+                                <label for="final-value">Final Value:</label>
+                                <input type="text" id="final-value" placeholder="Enter final value" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="calculate-percentage" class="tool-button">Calculate</button>
+                        </div>
+                        
+                        <div id="percent-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Ratio Calculator -->
+                <div class="tool-card" id="ratio-calculator">
+                    <h3><i class="fas fa-divide"></i> Ratio Calculator</h3>
+                    <div class="tool-content">
+                        <div class="ratio-inputs">
+                            <div class="ratio-input">
+                                <label for="first-number">First Number:</label>
+                                <input type="text" id="first-number" placeholder="Enter first number" style="color: black;">
+                            </div>
+                            <div class="ratio-input">
+                                <label for="second-number">Second Number:</label>
+                                <input type="text" id="second-number" placeholder="Enter second number" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="calculate-ratio" class="tool-button">Calculate</button>
+                        </div>
+                        
+                        <div id="ratio-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Proportion Calculator -->
+                <div class="tool-card" id="proportion-calculator">
+                    <h3><i class="fas fa-equals"></i> Proportion Calculator</h3>
+                    <div class="tool-content">
+                        <div class="proportion-inputs">
+                            <div class="proportion-input">
+                                <label for="proportion-a">First Number (a):</label>
+                                <input type="text" id="proportion-a" placeholder="Enter first number" style="color: black;">
+                            </div>
+                            <div class="proportion-input">
+                                <label for="proportion-b">Second Number (b):</label>
+                                <input type="text" id="proportion-b" placeholder="Enter second number" style="color: black;">
+                            </div>
+                            <div class="proportion-input">
+                                <label for="proportion-c">Third Number (c):</label>
+                                <input type="text" id="proportion-c" placeholder="Enter third number" style="color: black;">
+                            </div>
+                        </div>
+                        
+                        <div class="button-container">
+                            <button id="calculate-proportion" class="tool-button">Calculate</button>
+                        </div>
+                        
+                        <div id="proportion-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Mean, Median, Mode Calculator -->
+                <div class="tool-card" id="mean-median-mode">
+                    <h3><i class="fas fa-chart-line"></i> Mean, Median, Mode Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="numbers-input-mmm">Numbers (comma-separated):</label>
+                            <input style="color: black;" type="text" id="numbers-input-mmm" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <div class="button-container">
+                            <button id="calculate-mmm" class="tool-button">Calculate</button>
+                        </div>
+                        <div id="mmm-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Standard Deviation Calculator -->
+                <div class="tool-card" id="standard-deviation">
+                    <h3><i class="fas fa-sigma"></i> Standard Deviation Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="numbers-input-std">Numbers (comma-separated):</label>
+                            <input style="color: black;" type="text" id="numbers-input-std" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <div class="button-container">
+                            <button id="calculate-std" class="tool-button">Calculate</button>
+                        </div>
+                        <div id="std-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Variance Calculator -->
+                <div class="tool-card" id="variance-calculator">
+                    <h3><i class="fas fa-square"></i> Variance Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="numbers-input-var">Numbers (comma-separated):</label>
+                            <input style="color: black;" type="text" id="numbers-input-var" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <div class="button-container">
+                            <button id="calculate-var" class="tool-button">Calculate</button>
+                        </div>
+                        <div id="var-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Correlation Calculator -->
+                <div class="tool-card" id="correlation-calculator">
+                    <h3><i class="fas fa-link"></i> Correlation Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="correlation-x">X Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="correlation-x" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <div class="input-group">
+                            <label for="correlation-y">Y Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="correlation-y" placeholder="e.g., 2, 4, 6, 8, 10">
+                        </div>
+                        <button id="calculate-correlation" class="btn">Calculate</button>
+                        <div id="correlation-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Regression Calculator -->
+                <div class="tool-card" id="regression-calculator">
+                    <h3><i class="fas fa-chart-scatter"></i> Regression Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="regression-x">X Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="regression-x" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <div class="input-group">
+                            <label for="regression-y">Y Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="regression-y" placeholder="e.g., 2, 4, 6, 8, 10">
+                        </div>
+                        <button id="calculate-regression" class="btn">Calculate</button>
+                        <div id="regression-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Confidence Interval Calculator -->
+                <div class="tool-card" id="confidence-interval">
+                    <h3><i class="fas fa-chart-area"></i> Confidence Interval Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="ci-mean">Sample Mean:</label>
+                                <input type="number" id="ci-mean" step="any" placeholder="Enter sample mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="ci-std-dev">Standard Deviation:</label>
+                                <input type="number" id="ci-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                            <div class="input-group">
+                                <label for="ci-sample-size">Sample Size:</label>
+                                <input type="number" id="ci-sample-size" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="ci-level">Confidence Level (%):</label>
+                            <select id="ci-level">
+                                <option value="90">90%</option>
+                                <option value="95" selected>95%</option>
+                                <option value="99">99%</option>
+                            </select>
+                        </div>
+                        <button id="calculate-ci" class="btn">Calculate</button>
+                        <div id="ci-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Hypothesis Testing Calculator -->
+                <div class="tool-card" id="hypothesis-testing">
+                    <h3><i class="fas fa-check-double"></i> Hypothesis Testing Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="ht-sample-mean">Sample Mean:</label>
+                                <input type="number" id="ht-sample-mean" step="any" placeholder="Enter sample mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="ht-pop-mean">Population Mean:</label>
+                                <input type="number" id="ht-pop-mean" step="any" placeholder="Enter population mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="ht-std-dev">Standard Deviation:</label>
+                                <input type="number" id="ht-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                            <div class="input-group">
+                                <label for="ht-sample-size">Sample Size:</label>
+                                <input type="number" id="ht-sample-size" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="ht-significance">Significance Level (%):</label>
+                            <select id="ht-significance">
+                                <option value="1">1%</option>
+                                <option value="5" selected>5%</option>
+                                <option value="10">10%</option>
+                            </select>
+                        </div>
+                        <button id="calculate-ht" class="btn">Calculate</button>
+                        <div id="ht-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Chi-Square Calculator -->
+                <div class="tool-card" id="chi-square">
+                    <h3><i class="fas fa-square-root-alt"></i> Chi-Square Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="chi-observed">Observed Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="chi-observed" placeholder="e.g., 10, 15, 20, 25">
+                        </div>
+                        <div class="input-group">
+                            <label for="chi-expected">Expected Values (comma-separated):</label>
+                            <input style="color: black;" type="text" id="chi-expected" placeholder="e.g., 12, 15, 18, 25">
+                        </div>
+                        <button id="calculate-chi" class="btn">Calculate</button>
+                        <div id="chi-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- T-Test Calculator -->
+                <div class="tool-card" id="t-test">
+                    <h3><i class="fas fa-t"></i> T-Test Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="t-sample-mean">Sample Mean:</label>
+                                <input type="number" id="t-sample-mean" step="any" placeholder="Enter sample mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="t-pop-mean">Population Mean:</label>
+                                <input type="number" id="t-pop-mean" step="any" placeholder="Enter population mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="t-std-dev">Sample Standard Deviation:</label>
+                                <input type="number" id="t-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                            <div class="input-group">
+                                <label for="t-sample-size">Sample Size:</label>
+                                <input type="number" id="t-sample-size" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="t-significance">Significance Level (%):</label>
+                            <select id="t-significance">
+                                <option value="1">1%</option>
+                                <option value="5" selected>5%</option>
+                                <option value="10">10%</option>
+                            </select>
+                        </div>
+                        <button id="calculate-t-test" class="btn">Calculate</button>
+                        <div id="t-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Z-Test Calculator -->
+                <div class="tool-card" id="z-test">
+                    <h3><i class="fas fa-z"></i> Z-Test Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="z-sample-mean">Sample Mean:</label>
+                                <input type="number" id="z-sample-mean" step="any" placeholder="Enter sample mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="z-pop-mean">Population Mean:</label>
+                                <input type="number" id="z-pop-mean" step="any" placeholder="Enter population mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="z-pop-std-dev">Population Standard Deviation:</label>
+                                <input type="number" id="z-pop-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                            <div class="input-group">
+                                <label for="z-sample-size">Sample Size:</label>
+                                <input type="number" id="z-sample-size" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="z-significance">Significance Level (%):</label>
+                            <select id="z-significance">
+                                <option value="1">1%</option>
+                                <option value="5" selected>5%</option>
+                                <option value="10">10%</option>
+                            </select>
+                        </div>
+                        <button id="calculate-z-test" class="btn">Calculate</button>
+                        <div id="z-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- ANOVA Calculator -->
+                <div class="tool-card" id="anova-calculator">
+                    <h3><i class="fas fa-table"></i> ANOVA Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group" style="display: flex; flex-direction: column;">
+                            <label for="anova-groups" style="margin-bottom: 8px;">Groups (comma-separated numbers, one group per line):</label>
+                            <textarea 
+                                id="anova-groups" 
+                                rows="6" 
+                                style="
+                                    color: black; 
+                                    width: 100%;
+                                    min-height: 120px;
+                                    padding: 8px;
+                                    border: 1px solid #ced4da;
+                                    border-radius: 4px;
+                                    resize: vertical;
+                                    font-family: monospace;
+                                    white-space: pre;
+                                    overflow-wrap: normal;
+                                    overflow-x: auto;
+                                "
+                                placeholder="Enter multiple lines of text, one group per line, e.g.,&#10;1, 2, 3&#10;4, 5, 6&#10;7, 8, 9"
+                                onkeydown="if(event.keyCode===13){event.stopPropagation();}"
+                            ></textarea>
+                        </div>
+                        <button id="calculate-anova" class="btn">Calculate</button>
+                        <div id="anova-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- F-Test Calculator -->
+                <div class="tool-card" id="f-test">
+                    <h3><i class="fas fa-f"></i> F-Test Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="f-var1">Sample 1 Variance:</label>
+                                <input type="number" id="f-var1" step="any" min="0" placeholder="Enter variance">
+                            </div>
+                            <div class="input-group">
+                                <label for="f-var2">Sample 2 Variance:</label>
+                                <input type="number" id="f-var2" step="any" min="0" placeholder="Enter variance">
+                            </div>
+                            <div class="input-group">
+                                <label for="f-size1">Sample 1 Size:</label>
+                                <input type="number" id="f-size1" min="2" placeholder="Enter sample size">
+                            </div>
+                            <div class="input-group">
+                                <label for="f-size2">Sample 2 Size:</label>
+                                <input type="number" id="f-size2" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="f-significance">Significance Level (%):</label>
+                            <select id="f-significance">
+                                <option value="1">1%</option>
+                                <option value="5" selected>5%</option>
+                                <option value="10">10%</option>
+                            </select>
+                        </div>
+                        <button id="calculate-f-test" class="btn">Calculate</button>
+                        <div id="f-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- P-Value Calculator -->
+                <div class="tool-card" id="p-value-calculator">
+                    <h3 style="color: black;">P-Value Calculator</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="p-distribution">Distribution:</label>
+                                <select style="color: black;" id="p-distribution" class="form-control">
+                                    <option value="normal">Normal</option>
+                                    <option value="t">t-Distribution</option>
+                                    <option value="chi-square">Chi-Square</option>
+                                    <option value="f">F-Distribution</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="p-test-type">Test Type:</label>
+                                <select id="p-test-type" class="form-control">
+                                    <option value="two-tailed">Two-Tailed</option>
+                                    <option value="left-tailed">Left-Tailed</option>
+                                    <option value="right-tailed">Right-Tailed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="p-statistic">Test Statistic:</label>
+                                <input style="color: black;" type="number" id="p-statistic" class="form-control" step="any" placeholder="Enter test statistic">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="p-df1">Degrees of Freedom 1:</label>
+                                <input style="color: black;" type="number" id="p-df1" class="form-control" step="any" placeholder="Enter df1">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="p-df2">Degrees of Freedom 2:</label>
+                                <input style="color: black;" type="number" id="p-df2" class="form-control" step="any" placeholder="Enter df2">
+                            </div>
+                        </div>
+                        <button id="calculate-p-value" class="btn btn-primary">Calculate P-Value</button>
+                        <div id="p-value-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Critical Value Calculator -->
+                <div class="tool-card" id="critical-value">
+                    <h3>Critical Value Calculator</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="cv-distribution">Distribution:</label>
+                                <select id="cv-distribution" class="form-control">
+                                    <option value="normal">Normal</option>
+                                    <option value="t">t-Distribution</option>
+                                    <option value="chi-square">Chi-Square</option>
+                                    <option value="f">F-Distribution</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label  style="color: black;" for="cv-significance">Significance Level (%):</label>
+                                <input style="color: black;" type="number" id="cv-significance" class="form-control" min="0.1" max="50" step="0.1" value="5" placeholder="Enter significance level">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="cv-test-type">Test Type:</label>
+                                <select id="cv-test-type" class="form-control">
+                                    <option value="two-tailed">Two-Tailed</option>
+                                    <option value="left-tailed">Left-Tailed</option>
+                                    <option value="right-tailed">Right-Tailed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-row df-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="cv-df1">Degrees of Freedom 1:</label>
+                                <input style="color: black;" type="number" id="cv-df1" class="form-control" min="1" step="1" placeholder="Enter df1">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="cv-df2">Degrees of Freedom 2:</label>
+                                <input style="color: black;" type="number" id="cv-df2" class="form-control" min="1" step="1" placeholder="Enter df2">
+                            </div>
+                        </div>
+                        <button id="calculate-critical-value" class="btn btn-primary">Calculate Critical Value</button>
+                        <div id="critical-value-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Sample Size Calculator -->
+                <div class="tool-card" id="sample-size">
+                    <h3>Sample Size Calculator</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="ss-margin">Margin of Error (%):</label>
+                                <input style="color: black;" type="number" id="ss-margin" class="form-control" min="0.1" max="50" step="0.1" value="5" placeholder="Enter margin of error">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="ss-population">Population Size:</label>
+                                <input style="color: black;" type="number" id="ss-population" class="form-control" min="1" step="1" placeholder="Enter population size">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="ss-proportion">Expected Proportion (%):</label>
+                                <input style="color: black;" type="number" id="ss-proportion" class="form-control" min="0.1" max="99.9" step="0.1" value="50" placeholder="Enter expected proportion">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label for="ss-confidence">Confidence Level (%):</label>
+                                <select id="ss-confidence" class="form-control">
+                                    <option value="90">90%</option>
+                                    <option value="95" selected>95%</option>
+                                    <option value="99">99%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="calculate-sample-size" class="btn btn-primary">Calculate Sample Size</button>
+                        <div id="sample-size-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Margin of Error Calculator -->
+                <div class="tool-card" id="margin-of-error">
+                    <h3><i class="fas fa-plus-minus"></i> Margin of Error Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="me-sample-size">Sample Size:</label>
+                                <input style="color: black;" type="number" id="me-sample-size" class="form-control" min="2" placeholder="Enter sample size">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="me-population">Population Size:</label>
+                                <input style="color: black;" type="number" id="me-population" class="form-control" min="1" placeholder="Enter population size">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="me-proportion">Proportion (%):</label>
+                                <input style="color: black;" type="number" id="me-proportion" class="form-control" min="0" max="100" value="50" step="0.1" placeholder="Enter proportion">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="me-confidence">Confidence Level (%):</label>
+                                <select id="me-confidence" class="form-control">
+                                    <option value="90">90%</option>
+                                    <option value="95" selected>95%</option>
+                                    <option value="99">99%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="calculate-me" class="btn btn-primary">Calculate Margin of Error</button>
+                        <div id="me-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Power Analysis Calculator -->
+                <div class="tool-card" id="power-analysis">
+                    <h3><i class="fas fa-bolt"></i> Power Analysis Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="pa-effect-size">Effect Size:</label>
+                                <input style="color: black;" type="number" id="pa-effect-size" class="form-control" step="0.1" placeholder="Enter effect size">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="pa-sample-size">Sample Size:</label>
+                                <input style="color: black;" type="number" id="pa-sample-size" class="form-control" min="2" placeholder="Enter sample size">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="pa-significance">Significance Level (%):</label>
+                                <select id="pa-significance" class="form-control">
+                                    <option value="1">1%</option>
+                                    <option value="5" selected>5%</option>
+                                    <option value="10">10%</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="pa-test-type">Test Type:</label>
+                                <select id="pa-test-type" class="form-control">
+                                    <option value="two-tailed">Two-Tailed</option>
+                                    <option value="one-tailed">One-Tailed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="calculate-pa" class="btn btn-primary">Calculate Power</button>
+                        <div id="pa-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Effect Size Calculator -->
+                <div class="tool-card" id="effect-size">
+                    <h3><i class="fas fa-arrows-alt-h"></i> Effect Size Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="es-test-type">Test Type:</label>
+                            <select id="es-test-type">
+                                <option value="cohens-d">Cohen's d</option>
+                                <option value="pearsons-r">Pearson's r</option>
+                                <option value="odds-ratio">Odds Ratio</option>
+                            </select>
+                        </div>
+                        <div class="cohens-d-inputs">
+                            <div class="input-group">
+                                <label for="es-mean1">Mean 1:</label>
+                                <input type="number" id="es-mean1" step="any" placeholder="Enter mean 1">
+                            </div>
+                            <div class="input-group">
+                                <label for="es-mean2">Mean 2:</label>
+                                <input type="number" id="es-mean2" step="any" placeholder="Enter mean 2">
+                            </div>
+                            <div class="input-group">
+                                <label for="es-std-dev">Standard Deviation:</label>
+                                <input type="number" id="es-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                        </div>
+                        <div class="pearsons-r-inputs" style="display: none;">
+                            <div class="input-group">
+                                <label for="es-correlation">Correlation Coefficient:</label>
+                                <input type="number" id="es-correlation" step="0.01" min="-1" max="1" placeholder="Enter correlation">
+                            </div>
+                        </div>
+                        <div class="odds-ratio-inputs" style="display: none;">
+                            <div class="input-group">
+                                <label for="es-a">a:</label>
+                                <input type="number" id="es-a" min="0" placeholder="Enter a">
+                            </div>
+                            <div class="input-group">
+                                <label for="es-b">b:</label>
+                                <input type="number" id="es-b" min="0" placeholder="Enter b">
+                            </div>
+                            <div class="input-group">
+                                <label for="es-c">c:</label>
+                                <input type="number" id="es-c" min="0" placeholder="Enter c">
+                            </div>
+                            <div class="input-group">
+                                <label for="es-d">d:</label>
+                                <input type="number" id="es-d" min="0" placeholder="Enter d">
+                            </div>
+                        </div>
+                        <button id="calculate-es" class="btn">Calculate</button>
+                        <div id="es-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Bayes Calculator -->
+                <div class="tool-card" id="bayes-calculator">
+                    <h3><i class="fas fa-brain"></i> Bayes Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-row">
+                            <div class="input-field">
+                                <label style="color: black;" for="bayes-prior">Prior Probability (%):</label>
+                                <input style="color: black;" type="number" id="bayes-prior" class="form-control" min="0" max="100" step="0.1" placeholder="Enter prior probability">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="bayes-sensitivity">Sensitivity/True Positive Rate (%):</label>
+                                <input style="color: black;" type="number" id="bayes-sensitivity" class="form-control" min="0" max="100" step="0.1" placeholder="Enter sensitivity">
+                            </div>
+                            <div class="input-field">
+                                <label style="color: black;" for="bayes-specificity">Specificity/True Negative Rate (%):</label>
+                                <input style="color: black;" type="number" id="bayes-specificity" class="form-control" min="0" max="100" step="0.1" placeholder="Enter specificity">
+                            </div>
+                        </div>
+                        <button id="calculate-bayes" class="btn btn-primary">Calculate Probability</button>
+                        <div id="bayes-result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Probability Distribution Calculator -->
+                <div class="tool-card" id="probability-distribution">
+                    <h3><i class="fas fa-chart-pie"></i> Probability Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="prob-distribution">Distribution Type:</label>
+                            <select id="prob-distribution">
+                                <option value="normal">Normal Distribution</option>
+                                <option value="binomial">Binomial Distribution</option>
+                                <option value="poisson">Poisson Distribution</option>
+                                <option value="exponential">Exponential Distribution</option>
+                                <option value="uniform">Uniform Distribution</option>
+                            </select>
+                        </div>
+
+                        <!-- Normal Distribution Inputs -->
+                        <div class="distribution-inputs normal-inputs">
+                            <div class="input-group">
+                                <label for="normal-mean">Mean (μ):</label>
+                                <input type="number" id="normal-mean" step="any" placeholder="Enter mean">
+                            </div>
+                            <div class="input-group">
+                                <label for="normal-std-dev">Standard Deviation (σ):</label>
+                                <input type="number" id="normal-std-dev" step="any" min="0" placeholder="Enter standard deviation">
+                            </div>
+                            <div class="input-group">
+                                <label for="normal-x">X Value:</label>
+                                <input type="number" id="normal-x" step="any" placeholder="Enter x value">
+                            </div>
+                            <div class="input-group">
+                                <label for="normal-operation">Operation:</label>
+                                <select id="normal-operation">
+                                    <option value="pdf">Probability Density (PDF)</option>
+                                    <option value="cdf">Cumulative Probability (CDF)</option>
+                                    <option value="between">Probability Between Two Values</option>
+                                </select>
+                            </div>
+                            <div class="input-group normal-x2" style="display: none;">
+                                <label for="normal-x2">Second X Value:</label>
+                                <input type="number" id="normal-x2" step="any" placeholder="Enter second x value">
+                            </div>
+                        </div>
+
+                        <!-- Binomial Distribution Inputs -->
+                        <div class="distribution-inputs binomial-inputs" style="display: none;">
+                            <div class="input-group">
+                                <label for="binomial-n">Number of Trials (n):</label>
+                                <input type="number" id="binomial-n" min="1" placeholder="Enter number of trials">
+                            </div>
+                            <div class="input-group">
+                                <label for="binomial-p">Probability of Success (%):</label>
+                                <input type="number" id="binomial-p" min="0" max="100" step="0.1" placeholder="Enter probability">
+                            </div>
+                            <div class="input-group">
+                                <label for="binomial-k">Number of Successes (k):</label>
+                                <input type="number" id="binomial-k" min="0" placeholder="Enter number of successes">
+                            </div>
+                            <div class="input-group">
+                                <label for="binomial-operation">Operation:</label>
+                                <select id="binomial-operation">
+                                    <option value="exact">Exact Probability</option>
+                                    <option value="at-most">At Most k Successes</option>
+                                    <option value="at-least">At Least k Successes</option>
+                                    <option value="between">Between k1 and k2 Successes</option>
+                                </select>
+                            </div>
+                            <div class="input-group binomial-k2" style="display: none;">
+                                <label for="binomial-k2">Second k Value:</label>
+                                <input type="number" id="binomial-k2" min="0" placeholder="Enter second k value">
+                            </div>
+                        </div>
+
+                        <!-- Poisson Distribution Inputs -->
+                        <div class="distribution-inputs poisson-inputs" style="display: none;">
+                            <div class="input-group">
+                                <label for="poisson-lambda">Average Rate (λ):</label>
+                                <input type="number" id="poisson-lambda" step="any" min="0" placeholder="Enter average rate">
+                            </div>
+                            <div class="input-group">
+                                <label for="poisson-k">Number of Events (k):</label>
+                                <input type="number" id="poisson-k" min="0" placeholder="Enter number of events">
+                            </div>
+                            <div class="input-group">
+                                <label for="poisson-operation">Operation:</label>
+                                <select id="poisson-operation">
+                                    <option value="exact">Exact Probability</option>
+                                    <option value="at-most">At Most k Events</option>
+                                    <option value="at-least">At Least k Events</option>
+                                    <option value="between">Between k1 and k2 Events</option>
+                                </select>
+                            </div>
+                            <div class="input-group poisson-k2" style="display: none;">
+                                <label for="poisson-k2">Second k Value:</label>
+                                <input type="number" id="poisson-k2" min="0" placeholder="Enter second k value">
+                            </div>
+                        </div>
+
+                        <button id="calculate-prob-dist" class="btn">Calculate</button>
+                        <div id="prob-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Normal Distribution Calculator -->
+                <div class="tool-card" id="normal-distribution">
+                    <h3>Normal Distribution Calculator</h3>
+                    <div class="input-group">
+                        <label for="normal-mean">Mean (μ):</label>
+                        <input type="number" id="normal-mean" step="any" placeholder="Enter mean">
+                    </div>
+                    <div class="input-group">
+                        <label for="normal-std-dev">Standard Deviation (σ):</label>
+                        <input type="number" id="normal-std-dev" step="any" placeholder="Enter standard deviation">
+                    </div>
+                    <div class="input-group">
+                        <label for="normal-operation">Operation:</label>
+                        <select id="normal-operation">
+                            <option value="pdf">Probability Density Function (PDF)</option>
+                            <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                            <option value="between">Probability Between Two Values</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="normal-x">X Value:</label>
+                        <input type="number" id="normal-x" step="any" placeholder="Enter x value">
+                    </div>
+                    <div class="input-group" id="normal-x2-group" style="display: none;">
+                        <label for="normal-x2">Second X Value:</label>
+                        <input type="number" id="normal-x2" step="any" placeholder="Enter second x value">
+                    </div>
+                    <button onclick="calculateNormalDistribution()">Calculate</button>
+                    <div id="normal-dist-result" class="result"></div>
+                </div>
+
+                <!-- Binomial Distribution Calculator -->
+                <div class="tool-card" id="binomial-distribution">
+                    <h3>Binomial Distribution Calculator</h3>
+                    <div class="input-group">
+                        <label for="binomial-n">Number of Trials (n):</label>
+                        <input type="number" id="binomial-n" min="1" placeholder="Enter number of trials">
+                    </div>
+                    <div class="input-group">
+                        <label for="binomial-p">Probability of Success (p):</label>
+                        <input type="number" id="binomial-p" min="0" max="100" step="0.1" placeholder="Enter probability (%)">
+                    </div>
+                    <div class="input-group">
+                        <label for="binomial-operation">Operation:</label>
+                        <select id="binomial-operation">
+                            <option value="exact">Exact Probability</option>
+                            <option value="at-most">At Most k Successes</option>
+                            <option value="at-least">At Least k Successes</option>
+                            <option value="between">Between k1 and k2 Successes</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="binomial-k">Number of Successes (k):</label>
+                        <input type="number" id="binomial-k" min="0" placeholder="Enter number of successes">
+                    </div>
+                    <div class="input-group" id="binomial-k2-group" style="display: none;">
+                        <label for="binomial-k2">Second Number of Successes (k2):</label>
+                        <input type="number" id="binomial-k2" min="0" placeholder="Enter second number of successes">
+                    </div>
+                    <button onclick="calculateBinomialDistribution()">Calculate</button>
+                    <div id="binomial-dist-result" class="result"></div>
+                </div>
+
+                <!-- Poisson Distribution Calculator -->
+                <div class="tool-card" id="poisson-distribution">
+                    <h3>Poisson Distribution Calculator</h3>
+                    <div class="input-group">
+                        <label for="poisson-lambda">Average Rate (λ):</label>
+                        <input type="number" id="poisson-lambda" min="0" step="any" placeholder="Enter average rate">
+                    </div>
+                    <div class="input-group">
+                        <label for="poisson-operation">Operation:</label>
+                        <select id="poisson-operation">
+                            <option value="exact">Exact Probability</option>
+                            <option value="at-most">At Most k Events</option>
+                            <option value="at-least">At Least k Events</option>
+                            <option value="between">Between k1 and k2 Events</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="poisson-k">Number of Events (k):</label>
+                        <input type="number" id="poisson-k" min="0" placeholder="Enter number of events">
+                    </div>
+                    <div class="input-group" id="poisson-k2-group" style="display: none;">
+                        <label for="poisson-k2">Second Number of Events (k2):</label>
+                        <input type="number" id="poisson-k2" min="0" placeholder="Enter second number of events">
+                    </div>
+                    <button onclick="calculatePoissonDistribution()">Calculate</button>
+                    <div id="poisson-dist-result" class="result"></div>
+                </div>
+
+                <!-- Exponential Distribution Calculator -->
+                <div class="tool-card" id="exponential-distribution">
+                    <h3><i class="fas fa-chart-line"></i> Exponential Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="exponential-lambda">Rate Parameter (λ):</label>
+                            <input type="number" id="exponential-lambda" step="any" min="0" placeholder="Enter rate parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="exponential-operation">Operation:</label>
+                            <select id="exponential-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="exponential-x">X Value:</label>
+                            <input type="number" id="exponential-x" step="any" min="0" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="exponential-x2-group" style="display: none;">
+                            <label for="exponential-x2">Second X Value:</label>
+                            <input type="number" id="exponential-x2" step="any" min="0" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateExponentialDistribution()" class="btn">Calculate</button>
+                        <div id="exponential-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Uniform Distribution Calculator -->
+                <div class="tool-card" id="uniform-distribution">
+                    <h3><i class="fas fa-square"></i> Uniform Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="uniform-a">Lower Bound (a):</label>
+                            <input type="number" id="uniform-a" step="any" placeholder="Enter lower bound">
+                        </div>
+                        <div class="input-group">
+                            <label for="uniform-b">Upper Bound (b):</label>
+                            <input type="number" id="uniform-b" step="any" placeholder="Enter upper bound">
+                        </div>
+                        <div class="input-group">
+                            <label for="uniform-operation">Operation:</label>
+                            <select id="uniform-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="uniform-x">X Value:</label>
+                            <input type="number" id="uniform-x" step="any" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="uniform-x2-group" style="display: none;">
+                            <label for="uniform-x2">Second X Value:</label>
+                            <input type="number" id="uniform-x2" step="any" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateUniformDistribution()" class="btn">Calculate</button>
+                        <div id="uniform-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Geometric Distribution Calculator -->
+                <div class="tool-card" id="geometric-distribution">
+                    <h3><i class="fas fa-shapes"></i> Geometric Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="geometric-p">Probability of Success (%):</label>
+                            <input type="number" id="geometric-p" step="0.1" min="0" max="100" placeholder="Enter probability">
+                        </div>
+                        <div class="input-group">
+                            <label for="geometric-operation">Operation:</label>
+                            <select id="geometric-operation">
+                                <option value="exact">Exact Probability</option>
+                                <option value="at-most">At Most k Trials</option>
+                                <option value="at-least">At Least k Trials</option>
+                                <option value="between">Between k1 and k2 Trials</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="geometric-k">Number of Trials (k):</label>
+                            <input type="number" id="geometric-k" min="0" placeholder="Enter number of trials">
+                        </div>
+                        <div class="input-group" id="geometric-k2-group" style="display: none;">
+                            <label for="geometric-k2">Second Number of Trials (k2):</label>
+                            <input type="number" id="geometric-k2" min="0" placeholder="Enter second number of trials">
+                        </div>
+                        <button onclick="calculateGeometricDistribution()" class="btn">Calculate</button>
+                        <div id="geometric-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Hypergeometric Distribution Calculator -->
+                <div class="tool-card" id="hypergeometric-distribution">
+                    <h3><i class="fas fa-cubes"></i> Hypergeometric Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="hypergeometric-N">Population Size (N):</label>
+                            <input type="number" id="hypergeometric-N" min="1" placeholder="Enter population size">
+                        </div>
+                        <div class="input-group">
+                            <label for="hypergeometric-K">Number of Successes in Population (K):</label>
+                            <input type="number" id="hypergeometric-K" min="0" placeholder="Enter number of successes">
+                        </div>
+                        <div class="input-group">
+                            <label for="hypergeometric-n">Sample Size (n):</label>
+                            <input type="number" id="hypergeometric-n" min="1" placeholder="Enter sample size">
+                        </div>
+                        <div class="input-group">
+                            <label for="hypergeometric-operation">Operation:</label>
+                            <select id="hypergeometric-operation">
+                                <option value="exact">Exact Probability</option>
+                                <option value="at-most">At Most k Successes</option>
+                                <option value="at-least">At Least k Successes</option>
+                                <option value="between">Between k1 and k2 Successes</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="hypergeometric-k">Number of Successes in Sample (k):</label>
+                            <input type="number" id="hypergeometric-k" min="0" placeholder="Enter number of successes">
+                        </div>
+                        <div class="input-group" id="hypergeometric-k2-group" style="display: none;">
+                            <label for="hypergeometric-k2">Second Number of Successes (k2):</label>
+                            <input type="number" id="hypergeometric-k2" min="0" placeholder="Enter second number of successes">
+                        </div>
+                        <button onclick="calculateHypergeometricDistribution()" class="btn">Calculate</button>
+                        <div id="hypergeometric-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Weibull Distribution Calculator -->
+                <div class="tool-card" id="weibull-distribution">
+                    <h3><i class="fas fa-wave-square"></i> Weibull Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="weibull-k">Shape Parameter (k):</label>
+                            <input type="number" id="weibull-k" step="any" min="0" placeholder="Enter shape parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="weibull-lambda">Scale Parameter (λ):</label>
+                            <input type="number" id="weibull-lambda" step="any" min="0" placeholder="Enter scale parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="weibull-operation">Operation:</label>
+                            <select id="weibull-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="weibull-x">X Value:</label>
+                            <input type="number" id="weibull-x" step="any" min="0" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="weibull-x2-group" style="display: none;">
+                            <label for="weibull-x2">Second X Value:</label>
+                            <input type="number" id="weibull-x2" step="any" min="0" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateWeibullDistribution()" class="btn">Calculate</button>
+                        <div id="weibull-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Gamma Distribution Calculator -->
+                <div class="tool-card" id="gamma-distribution">
+                    <h3><i class="fas fa-chart-bar"></i> Gamma Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="gamma-k">Shape Parameter (k):</label>
+                            <input type="number" id="gamma-k" step="any" min="0.1" placeholder="Enter shape parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="gamma-theta">Scale Parameter (θ):</label>
+                            <input type="number" id="gamma-theta" step="any" min="0.1" placeholder="Enter scale parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="gamma-operation">Operation:</label>
+                            <select id="gamma-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="gamma-x">X Value:</label>
+                            <input type="number" id="gamma-x" step="any" min="0" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="gamma-x2-group" style="display: none;">
+                            <label for="gamma-x2">Second X Value:</label>
+                            <input type="number" id="gamma-x2" step="any" min="0" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateGammaDistribution()" class="btn">Calculate</button>
+                        <div id="gamma-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Beta Distribution Calculator -->
+                <div class="tool-card" id="beta-distribution">
+                    <h3><i class="fas fa-chart-area"></i> Beta Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="beta-alpha">Shape Parameter (α):</label>
+                            <input type="number" id="beta-alpha" step="any" min="0.1" placeholder="Enter alpha parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="beta-beta">Shape Parameter (β):</label>
+                            <input type="number" id="beta-beta" step="any" min="0.1" placeholder="Enter beta parameter">
+                        </div>
+                        <div class="input-group">
+                            <label for="beta-operation">Operation:</label>
+                            <select id="beta-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="beta-x">X Value (0 to 1):</label>
+                            <input type="number" id="beta-x" step="any" min="0" max="1" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="beta-x2-group" style="display: none;">
+                            <label for="beta-x2">Second X Value (0 to 1):</label>
+                            <input type="number" id="beta-x2" step="any" min="0" max="1" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateBetaDistribution()" class="btn">Calculate</button>
+                        <div id="beta-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Chi-Square Distribution Calculator -->
+                <div class="tool-card" id="chi-square-distribution">
+                    <h3><i class="fas fa-square-root-alt"></i> Chi-Square Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="chi-square-df">Degrees of Freedom:</label>
+                            <input type="number" id="chi-square-df" min="1" placeholder="Enter degrees of freedom">
+                        </div>
+                        <div class="input-group">
+                            <label for="chi-square-operation">Operation:</label>
+                            <select id="chi-square-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="chi-square-x">X Value:</label>
+                            <input type="number" id="chi-square-x" step="any" min="0" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="chi-square-x2-group" style="display: none;">
+                            <label for="chi-square-x2">Second X Value:</label>
+                            <input type="number" id="chi-square-x2" step="any" min="0" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateChiSquareDistribution()" class="btn">Calculate</button>
+                        <div id="chi-square-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- F-Distribution Calculator -->
+                <div class="tool-card" id="f-distribution">
+                    <h3><i class="fas fa-f"></i> F-Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="f-df1">Degrees of Freedom 1:</label>
+                            <input type="number" id="f-df1" min="1" placeholder="Enter degrees of freedom 1">
+                        </div>
+                        <div class="input-group">
+                            <label for="f-df2">Degrees of Freedom 2:</label>
+                            <input type="number" id="f-df2" min="1" placeholder="Enter degrees of freedom 2">
+                        </div>
+                        <div class="input-group">
+                            <label for="f-operation">Operation:</label>
+                            <select id="f-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="f-x">X Value:</label>
+                            <input type="number" id="f-x" step="any" min="0" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="f-x2-group" style="display: none;">
+                            <label for="f-x2">Second X Value:</label>
+                            <input type="number" id="f-x2" step="any" min="0" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateFDistribution()" class="btn">Calculate</button>
+                        <div id="f-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- T-Distribution Calculator -->
+                <div class="tool-card" id="t-distribution">
+                    <h3><i class="fas fa-t"></i> T-Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="t-df">Degrees of Freedom:</label>
+                            <input type="number" id="t-df" min="1" placeholder="Enter degrees of freedom">
+                        </div>
+                        <div class="input-group">
+                            <label for="t-operation">Operation:</label>
+                            <select id="t-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="t-x">X Value:</label>
+                            <input type="number" id="t-x" step="any" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="t-x2-group" style="display: none;">
+                            <label for="t-x2">Second X Value:</label>
+                            <input type="number" id="t-x2" step="any" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateTDistribution()" class="btn">Calculate</button>
+                        <div id="t-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Z-Distribution Calculator -->
+                <div class="tool-card" id="z-distribution">
+                    <h3><i class="fas fa-z"></i> Z-Distribution Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="z-operation">Operation:</label>
+                            <select id="z-operation">
+                                <option value="pdf">Probability Density Function (PDF)</option>
+                                <option value="cdf">Cumulative Distribution Function (CDF)</option>
+                                <option value="between">Probability Between Two Values</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="z-x">X Value:</label>
+                            <input type="number" id="z-x" step="any" placeholder="Enter x value">
+                        </div>
+                        <div class="input-group" id="z-x2-group" style="display: none;">
+                            <label for="z-x2">Second X Value:</label>
+                            <input type="number" id="z-x2" step="any" placeholder="Enter second x value">
+                        </div>
+                        <button onclick="calculateZDistribution()" class="btn">Calculate</button>
+                        <div id="z-dist-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Matrix Calculator -->
+                <style>
+                    /* Force black text in matrix calculator inputs */
+                    #matrix-calculator .matrix-cell,
+                    #matrix-calculator .matrix-rows,
+                    #matrix-calculator .matrix-cols {
+                        color: #000000 !important;
+                    }
+                    /* Force black text in number inputs */
+                    #matrix-calculator input[type="number"] {
+                        color: #000000 !important;
+                        -webkit-text-fill-color: #000000 !important;
+                    }
+                    /* Force black text in dropdowns */
+                    #matrix-calculator select {
+                        color: #000000 !important;
+                    }
+                    /* Force black text in dropdown options */
+                    #matrix-calculator option {
+                        color: #000000 !important;
+                        background: #ffffff !important;
+                    }
+                </style>
+                <div class="tool-card" id="matrix-calculator">
+                    <h3><i class="fas fa-table"></i> Matrix Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="matrix-operation">Operation:</label>
+                            <select id="matrix-operation">
+                                <option value="add">Addition</option>
+                                <option value="subtract">Subtraction</option>
+                                <option value="multiply">Multiplication</option>
+                            </select>
+                        </div>
+                        <div class="matrix-inputs">
+                            <div class="matrix-container">
+                                <div class="matrix-header">
+                                    <h4>Matrix A</h4>
+                                    <div class="matrix-dimensions">
+                                        <div class="dimension-selector">
+                                            <label>Rows:</label>
+                                            <select style="color: black;" class="matrix-rows" data-matrix="a">
+                                                <option value="1">1</option>
+                                                <option value="2" selected>2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                        <div class="dimension-selector">
+                                            <label>Cols:</label>
+                                            <select style="color: black;" class="matrix-cols" data-matrix="a">
+                                                <option value="1">1</option>
+                                                <option value="2" selected>2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="matrix-a" class="matrix-grid">
+                                    <div class="matrix-row">
+                                        <input style="color: black;" type="number" class="matrix-cell" value="" placeholder="number">
+                                        <input style="color: black;" type="number" class="matrix-cell" value="" placeholder="number">
+                                    </div>
+                                    <div class="matrix-row">
+                                        <input style="color: black;" type="number" class="matrix-cell" value="" placeholder="number">
+                                        <input style="color: black;" type="number" class="matrix-cell" value="" placeholder="number">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="matrix-operator">
+                                <span id="matrix-operator">+</span>
+                            </div>
+                            
+                            <div class="matrix-container">
+                                <div class="matrix-header">
+                                    <h4>Matrix B</h4>
+                                    <div  class="matrix-dimensions">
+                                        <div class="dimension-selector">
+                                            <label>Rows:</label>
+                                            <select style="color: black;" class="matrix-rows" data-matrix="b">
+                                                <option value="1">1</option>
+                                                <option value="2" selected>2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                        <div class="dimension-selector">
+                                            <label>Cols:</label>
+                                            <select style="color: black;" class="matrix-cols" data-matrix="b">
+                                                <option value="1">1</option>
+                                                <option value="2" selected>2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="matrix-b" class="matrix-grid">
+                                    <div class="matrix-row">
+                                        <input style="color : black !important;" type="number" class="matrix-cell"  placeholder="number">
+                                        <input  style="color: black;" type="number" class="matrix-cell"  placeholder="number">
+                                    </div>
+                                    <div class="matrix-row">
+                                        <input style="color: black;" type="number" class="matrix-cell"  placeholder="number">
+                                        <input style="color: black;" type="number" class="matrix-cell"  placeholder="number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="matrix-actions">
+                            <button id="calculate-matrix" class="btn">Calculate</button>
+                            <button id="clear-matrix" class="btn btn-secondary">Clear</button>
+                        </div>
+                        <div id="matrix-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Equation Solver -->
+                <div class="tool-card" id="equation-solver">
+                    <h3><i class="fas fa-equals"></i> Equation Solver</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label  for="equation-type">Equation Type:</label>
+                            <select id="equation-type">
+                                <option value="linear">Linear Equation</option>
+                                <!-- <option value="quadratic">Quadratic Equation</option>
+                                <option value="cubic">Cubic Equation</option> -->
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="equation-input">Equation:</label>
+                            <input style="color: black;" type="text" id="equation-input" placeholder="e.g., 2x + 3 = 7 ( x should be small letter )">
+                        </div>
+                        <button id="solve-equation" class="btn">Solve</button>
+                        <div id="equation-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Function Plotter -->
+                <div class="tool-card" id="function-plotter">
+                    <h3><i class="fas fa-chart-line"></i> Function Plotter</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="function-input">Function:</label>
+                            <input style="color: black;" type="text" id="function-input" placeholder="e.g., x^2 + 2x + 1 ( x should be small letter)">
+                        </div>
+                        <div class="input-group">
+                            <label for="x-min">X Min:</label>
+                            <input style="color: black;" type="number" id="x-min" value="-10">
+                            <label style="color: black;" for="x-max">X Max:</label>
+                            <input style="color: black;" type="number" id="x-max" value="10">
+                        </div>
+                        <div class="input-group">
+                            <label for="y-min">Y Min:</label>
+                            <input style="color: black;" type="number" id="y-min" value="-10">
+                            <label for="y-max">Y Max:</label>
+                            <input style="color: black;" type="number" id="y-max" value="10">
+                        </div>
+                        <button id="plot-function" class="btn">Plot</button>
+                        <div id="plot-container" class="plot-container"></div>
+                    </div>
+                </div>
+
+                <!-- Statistics Calculator -->
+                <style>
+                    /* Ensure statistics results are visible */
+                    .statistics-results {
+                        margin-top: 20px;
+                        padding: 20px;
+                        border-radius: 8px;
+                        background-color: #f8f9fa;
+                        border: 1px solid #dee2e6;
+                        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                        display: block !important; /* Force display */
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+                    
+                    .statistics-results .result-item {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 12px;
+                        padding: 10px 15px;
+                        background-color: #fff;
+                        border-radius: 6px;
+                        border: 1px solid #e9ecef;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .statistics-results .result-item:hover {
+                        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+                        transform: translateY(-1px);
+                    }
+                    
+                    .statistics-results .result-label {
+                        font-weight: 500;
+                        color: #212529;
+                        font-size: 0.95rem;
+                    }
+                    
+                    .statistics-results .result-value {
+                        font-family: 'Courier New', monospace;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: #000 !important; /* Force black text */
+                        background-color: #f8f9fa;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        border: 1px solid #dee2e6;
+                        min-width: 80px;
+                        text-align: right;
+                    }
+                    
+                    .statistics-results .result-group {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    
+                    .statistics-results .copy-btn {
+                        background: none;
+                        border: none;
+                        color: #6c757d;
+                        cursor: pointer;
+                        padding: 4px;
+                        border-radius: 4px;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .statistics-results .copy-btn:hover {
+                        color: #0d6efd;
+                        background-color: #e9ecef;
+                    }
+                    .result-item {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        padding: 8px 12px;
+                        background-color: white;
+                        border-radius: 4px;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    }
+                    .result-label {
+                        font-weight: bold;
+                        color: #333;
+                    }
+                    .result-value {
+                        color: #000;
+                        font-family: monospace;
+                        font-size: 1.1em;
+                    }
+                    .statistics-results.error {
+                        color: #dc3545;
+                        background-color: #f8d7da;
+                        border: 1px solid #f5c6cb;
+                        padding: 10px;
+                        border-radius: 4px;
+                        margin-top: 10px;
+                    }
+                </style>
+                <div class="tool-card" id="statistics">
+                    <h3>Statistics Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="data-input">Enter numbers (comma-separated):</label>
+                            <input style="color: black;" type="text" id="data-input" class="data-input" placeholder="e.g., 1, 2, 3, 4, 5">
+                        </div>
+                        <button id="calculate-statistics" class="calc-btn">Calculate Statistics</button>
+                        <div class="statistics-results">
+                            <div class="result-item">
+                                <span class="result-label">Mean:</span>
+                                <div class="result-group">
+                                    <span id="mean-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="mean-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Median:</span>
+                                <div class="result-group">
+                                    <span id="median-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="median-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Mode:</span>
+                                <div class="result-group">
+                                    <span id="mode-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="mode-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Standard Deviation:</span>
+                                <div class="result-group">
+                                    <span id="std-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="std-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Variance:</span>
+                                <div class="result-group">
+                                    <span id="variance-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="variance-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Range:</span>
+                                <div class="result-group">
+                                    <span id="range-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="range-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Minimum:</span>
+                                <div class="result-group">
+                                    <span id="min-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="min-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Maximum:</span>
+                                <div class="result-group">
+                                    <span id="max-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="max-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Number Converter -->
+                <div class="tool-card" id="number-converter">
+                    <h3><i class="fas fa-exchange-alt"></i> Number Converter</h3>
+                    <div class="calculator-container">
+                        <div class="input-group">
+                            <label for="number-input">Enter a number:</label>
+                            <input style="color: black;" type="text" id="number-input" class="data-input" placeholder="Enter a number">
+                        </div>
+                        <div class="input-group">
+                            <label for="number-type">Select number type:</label>
+                            <select id="number-type" class="data-input">
+                                <option value="decimal">Decimal</option>
+                                <option value="binary">Binary</option>
+                                <option value="octal">Octal</option>
+                                <option value="hexadecimal">Hexadecimal</option>
+                            </select>
+                        </div>
+                        <button id="convert-number" class="calc-btn">Convert</button>
+                        <div class="conversion-results">
+                            <div class="result-item">
+                                <span class="result-label">Decimal:</span>
+                                <div class="result-group">
+                                    <span id="decimal-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="decimal-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Binary:</span>
+                                <div class="result-group">
+                                    <span id="binary-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="binary-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Octal:</span>
+                                <div class="result-group">
+                                    <span id="octal-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="octal-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Hexadecimal:</span>
+                                <div class="result-group">
+                                    <span id="hex-result" class="result-value"></span>
+                                    <button class="copy-btn" data-target="hex-result" title="Copy to clipboard">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prime Factorization -->
+                <div class="tool-card" id="prime-factorization">
+                    <h3><i class="fas fa-sort-numeric-down"></i> Prime Factorization</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="number-to-factorize">Number:</label>
+                            <input style="color: black;" type="number" id="number-to-factorize" placeholder="Enter a number">
+                        </div>
+                        <button id="factorize-number" class="btn">Factorize</button>
+                        <div id="factorization-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Unit Converter -->
+                <div class="tool-card" id="unit-converter">
+                    <h3><i class="fas fa-ruler"></i> Unit Converter</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="conversion-type">Conversion Type:</label>
+                            <select id="conversion-type" class="dark-mode-select">
+                                <option value="length">Length</option>
+                                <option value="weight">Weight</option>
+                                <option value="temperature">Temperature</option>
+                                <option value="area">Area</option>
+                                <option value="volume">Volume</option>
+                                <option value="time">Time</option>
+                                <option value="speed">Speed</option>
+                            </select>
+                        </div>
+                        <div class="unit-conversion-container">
+                            <div class="unit-group">
+                                <label for="from-unit">From Unit:</label>
+                                <select id="from-unit" class="dark-mode-select"></select>
+                            </div>
+                            <div class="unit-group">
+                                <label for="to-unit">To Unit:</label>
+                                <select id="to-unit" class="dark-mode-select"></select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="conversion-value">Value:</label>
+                            <input style="color: black;" type="number" id="conversion-value" step="any" placeholder="Enter value">
+                        </div>
+                        <button id="convert-unit" class="btn">Convert</button>
+                        <div id="unit-result" class="result-display"></div>
+                    </div>
+                </div>
+
+                <!-- Percentage Calculator -->
+                <div class="tool-card" id="percentage-calculator">
+                    <h3><i class="fas fa-percent"></i> Percentage Calculator</h3>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="percentage-type">Calculation Type:</label>
+                            <select id="percentage-type">
+                                <option value="basic">Basic Percentage</option>
+                                <option value="increase">Percentage Increase</option>
+                                <option value="decrease">Percentage Decrease</option>
+                                <option value="of">Percentage of Number</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="percentage-value">Value:</label>
+                            <input type="number" id="percentage-value" step="any" placeholder="Enter value">
+                        </div>
+                        <div class="input-group">
+                            <label for="percentage-total">Total/Original Value:</label>
+                            <input style="color: black;" type="number" id="percentage-total" step="any" placeholder="Enter total/original value">
+                        </div>
+                        <button id="calculate-percentage" class="btn">Calculate</button>
+                        <div id="percentage-result" class="result-display"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for free online tools and utilities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="pages/image-tools.html">Image Tools</a>
+                <a href="pages/color-tools.html">Color Tools</a>
+                <a href="pages/math-tools.html">Math Tools</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>Found a bug? Have a suggestion?</p>
+                <a href="mailto:rahimullahebrahimkhail564700@gmail.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 allFreeTools. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="../js/main.js"></script>
+    <script src="../js/math-tools.js"></script>
+    <script src="../js/series-calculator.js"></script>
+    <script src="../js/probability-calculator.js"></script>
+    <script src="../js/geometry-calculator.js"></script>
+    <script>
+        // Quick Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show Scientific Calculator by default
+            const calculatorCard = document.getElementById('calculator');
+            if (calculatorCard) {
+                calculatorCard.classList.add('active');
+            }
+
+            // Handle Quick Navigation clicks
+            document.querySelectorAll('.quick-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.quick-nav a').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Get the target tool card ID
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // Show the target tool card
+                    showToolCard(targetId);
+                });
+            });
+
+            function showToolCard(cardId) {
+                // Remove active class from all cards
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                // Add active class to target card
+                const targetCard = document.getElementById(cardId);
+                if (targetCard) {
+                    targetCard.classList.add('active');
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            // Handle hash navigation
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                showToolCard(targetId);
+            }
+        });
+
+        // Debug script to help with input issues
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Debug script loaded');
+            
+            // Make all inputs writable
+            document.querySelectorAll('input').forEach(input => {
+                // Remove any existing event listeners that might block input
+                const newInput = input.cloneNode(true);
+                input.parentNode.replaceChild(newInput, input);
+                
+                // Make sure input is not disabled or readonly
+                newInput.disabled = false;
+                newInput.readOnly = false;
+                
+                // Add basic event listeners for debugging
+                newInput.addEventListener('input', function(e) {
+                    console.log('Input event:', e.target.value);
+                });
+                
+                newInput.addEventListener('keydown', function(e) {
+                    console.log('Keydown:', e.key);
+                });
+            });
+            
+            // Log when the page is fully loaded
+            console.log('Page fully loaded');
+        });
+    </script>
+    
+    <!-- Equation Solver -->
+    <script src="../js/equation-solver.js"></script>
+</body>
+</html>

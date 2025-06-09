@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Tools - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Tool Card Styles */
+        .tool-card {
+            display: none;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Input Group Styles */
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .input-group input[type="number"] {
+            width: 100px;
+        }
+
+        .input-group input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Tool Content Spacing */
+        .tool-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        /* Quick Navigation Styles */
+        .quick-nav {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .quick-nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: white;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .quick-nav-links a i {
+            margin-right: 0.5rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Loading State */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Text Analysis Styles */
+        .analysis-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-group {
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .word-frequency {
+            margin-top: 1rem;
+        }
+
+        .word-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .word-bar .word {
+            width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .word-bar .bar {
+            height: 20px;
+            background: var(--primary-color);
+            margin: 0 1rem;
+            border-radius: 3px;
+        }
+
+        .word-bar .count {
+            width: 40px;
+            text-align: right;
+        }
+
+        /* Text Comparison Styles */
+        .comparison-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-results {
+            margin-top: 1rem;
+        }
+
+        .similarity-score {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .similarity-score h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        #similarityScore {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .diff-view {
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .diff-view .unchanged {
+            color: var(--text-color);
+        }
+
+        .diff-view .added {
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .diff-view .removed {
+            color: #c0392b;
+            background: rgba(192, 57, 43, 0.1);
+            text-decoration: line-through;
+        }
+
+        /* Text Transformation Styles */
+        .transformation-options {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .transformation-options select {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        /* Active Tool Styles */
+        .tool-card {
+            display: none;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tool-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .tool-header h3 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        /* Active Navigation Link */
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .quick-nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: white;
+            animation: slideIn 0.3s ease;
+        }
+
+        /* my new Style*/
+        /* Quick Navigation */
+        .quick-nav {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+       /* textarea{
+        background-color: black;
+        color: white;
+       } */
+       textarea{
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html" class="active">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="math-tools.html">Math Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Text & Content Utilities</h1>
+            <p>Powerful tools for text manipulation and content creation</p>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <h3 style="color: green !important; margin-bottom: 15px;"> Please choose an option ==></h3>
+            <div class="quick-nav-links">
+                <a href="#text-case-converter"><i class="fas fa-font"></i> Text Case Converter</a>
+                <a href="#word-counter"><i class="fas fa-calculator"></i> Word Counter</a>
+                <a href="#json-formatter"><i class="fas fa-code"></i> JSON Formatter</a>
+                <a href="#text-encryptor"><i class="fas fa-lock"></i> Text Encryptor</a>
+                <a href="#find-replace"><i class="fas fa-search"></i> Find & Replace</a>
+                <a href="#text-cleaner"><i class="fas fa-broom"></i> Text Cleaner</a>
+                <a href="#base64-converter"><i class="fas fa-file-code"></i> Base64 Converter</a>
+                <a href="#slug-generator"><i class="fas fa-link"></i> Slug Generator</a>
+                <a href="#morse-code"><i class="fas fa-wave-square"></i> Morse Code</a>
+                <a href="#lorem-ipsum"><i class="fas fa-paragraph"></i> Lorem Ipsum</a>
+                <a href="#reverse-text"><i class="fas fa-exchange-alt"></i> Reverse Text</a>
+                <a href="#text-sorter"><i class="fas fa-sort"></i> Text Sorter</a>
+                <a href="#binary-converter"><i class="fas fa-code"></i> Binary Converter</a>
+                <a href="#text-diff"><i class="fas fa-code-compare"></i> Text Diff Checker</a>
+                <a href="#remove-duplicates"><i class="fas fa-filter"></i> Remove Duplicates</a>
+                <a href="#split-text"><i class="fas fa-cut"></i> Split Text</a>
+                <a href="#join-text"><i class="fas fa-link"></i> Join Text</a>
+                <a href="#repeat-text"><i class="fas fa-redo"></i> Repeat Text</a>
+                <a href="#truncate-text"><i class="fas fa-scissors"></i> Truncate Text</a>
+                <a href="#slice-text"><i class="fas fa-crop"></i> Slice Text</a>
+                <a href="#trim-text"><i class="fas fa-compress"></i> Trim Text</a>
+                <a href="#pad-text"><i class="fas fa-expand"></i> Pad Text</a>
+                <a href="#align-text"><i class="fas fa-align-left"></i> Align Text</a>
+                <a href="#indent-text"><i class="fas fa-indent"></i> Indent Text</a>
+                <a href="#justify-text"><i class="fas fa-align-justify"></i> Justify Text</a>
+                <a href="#wrap-text"><i class="fas fa-text-width"></i> Wrap Text</a>
+                <a href="#swap-letters"><i class="fas fa-random"></i> Swap Letters</a>
+                <a href="#swap-words"><i class="fas fa-random"></i> Swap Words</a>
+                <a href="#duplicate-words"><i class="fas fa-copy"></i> Duplicate Words</a>
+                <a href="#remove-words"><i class="fas fa-eraser"></i> Remove Words</a>
+                <a href="#duplicate-sentences"><i class="fas fa-copy"></i> Duplicate Sentences</a>
+                <a href="#remove-sentences"><i class="fas fa-eraser"></i> Remove Sentences</a>
+                <a href="#replace-words"><i class="fas fa-exchange-alt"></i> Replace Words</a>
+                <a href="#add-random-words"><i class="fas fa-random"></i> Add Random Words</a>
+                <a href="#add-random-letters"><i class="fas fa-random"></i> Add Random Letters</a>
+                <a href="#introduce-errors"><i class="fas fa-bug"></i> Introduce Errors</a>
+                <a href="#fake-text"><i class="fas fa-mask"></i> Fake Text Tool</a>
+                <a href="#remove-random-letters"><i class="fas fa-eraser"></i> Remove Random Letters</a>
+                <a href="#remove-random-symbols"><i class="fas fa-eraser"></i> Remove Random Symbols from Text</a>
+                <a href="#add-symbols-around-words"><i class="fas fa-asterisk"></i> Add Symbols Around Words</a>
+                <a href="#remove-symbols-around-words"><i class="fas fa-minus-circle"></i> Remove Symbols from Around Words</a>
+                <a href="#add-prefix-lines"><i class="fas fa-arrow-right"></i> Add a Prefix to Text Lines</a>
+                <a href="#add-suffix-lines"><i class="fas fa-arrow-left"></i> Add a Suffix to Text Lines</a>
+                <a href="#remove-prefix-lines"><i class="fas fa-minus"></i> Remove a Prefix from Text Lines</a>
+                <a href="#remove-suffix-lines"><i class="fas fa-minus"></i> Remove a Suffix from Text Lines</a>
+                <a href="#add-prefix-words"><i class="fas fa-arrow-right"></i> Add a Prefix to Words</a>
+                <a href="#add-suffix-words"><i class="fas fa-arrow-left"></i> Add a Suffix to Words</a>
+                <a href="#sort-symbols"><i class="fas fa-sort-alpha-down"></i> Sort Symbols in Text</a>
+                <a href="#randomize-letters"><i class="fas fa-random"></i> Randomize Letters in Text</a>
+                <a href="#scramble-words"><i class="fas fa-random"></i> Scramble Words</a>
+                <a href="#randomize-words"><i class="fas fa-random"></i> Randomize Words in Text</a>
+                <a href="#randomize-lines"><i class="fas fa-random"></i> Randomize Text Lines</a>
+                <a href="#randomize-sentences"><i class="fas fa-random"></i> Randomize Text Sentences</a>
+                <a href="#randomize-paragraphs"><i class="fas fa-random"></i> Randomize Text Paragraphs</a>
+                <a href="#calculate-letter-sum"><i class="fas fa-calculator"></i> Calculate Letter Sum</a>
+                <a href="#unwrap-text"><i class="fas fa-compress-alt"></i> Unwrap Text Lines</a>
+            </div>
+        </section>
+
+        <section class="tools-section">
+            <div class="tools-grid">
+                <!-- Text Case Converter -->
+                <div class="tool-card active" id="text-case-converter">
+                    <div class="tool-header">
+                        <i class="fas fa-font"></i>
+                        <h3>Text Case Converter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="caseInput" placeholder="Enter text to convert..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" data-case="upper">UPPERCASE</button>
+                            <button class="btn" data-case="lower">lowercase</button>
+                            <button class="btn" data-case="sentence">Sentence case</button>
+                            <button class="btn" data-case="title">Title Case</button>
+                        </div>
+                        <textarea id="caseOutput" placeholder="Converted text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Word Counter -->
+                <div class="tool-card" id="word-counter">
+                    <div class="tool-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Word Counter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="wordInput" placeholder="Enter text to count..."></textarea>
+                        <div class="analysis-stats">
+                            <div class="stat-group">
+                                <div class="stat" id="charCount">Characters: 0 | Words: 0 | Lines: 0 | Paragraphs: 0</div>
+                            </div>
+                            </div>
+                    </div>
+                </div>
+
+                <!-- JSON Formatter -->
+                <div class="tool-card" id="json-formatter">
+                    <div class="tool-header">
+                        <i class="fas fa-code"></i>
+                        <h3>JSON Formatter</h3>
+                        </div>
+                    <div class="tool-content">
+                        <textarea id="jsonInput" placeholder="Enter JSON to format..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" data-json="format">Format JSON</button>
+                            <button class="btn" data-json="minify">Minify JSON</button>
+                        </div>
+                        <textarea id="jsonOutput" placeholder="Formatted JSON will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Text Encryptor -->
+                <div class="tool-card" id="text-encryptor">
+                    <div class="tool-header">
+                        <i class="fas fa-lock"></i>
+                        <h3>Text Encryptor</h3>
+                        </div>
+                    <div class="tool-content">
+                        <textarea id="encryptInput" placeholder="Enter text to encrypt..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" data-encrypt="caesar">Caesar Cipher</button>
+                            <button class="btn" data-encrypt="rot13">ROT13</button>
+                        </div>
+                        <textarea id="encryptOutput" placeholder="Encrypted text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Find & Replace -->
+                <div class="tool-card" id="find-replace">
+                    <div class="tool-header">
+                        <i class="fas fa-search"></i>
+                        <h3>Find & Replace</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="findInput" placeholder="Text to find...">
+                            <input type="text" id="replaceInput" placeholder="Replace with...">
+                            <label>
+                                <input type="checkbox" id="caseSensitive">
+                                Case sensitive
+                            </label>
+                        </div>
+                        <textarea id="findReplaceInput" placeholder="Enter text to search in..."></textarea>
+                        <button class="btn" id="findReplaceBtn">Replace All</button>
+                        <textarea id="findReplaceOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Text Cleaner -->
+                <div class="tool-card" id="text-cleaner">
+                    <div class="tool-header">
+                        <i class="fas fa-broom"></i>
+                        <h3>Text Cleaner</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="cleanInput" placeholder="Enter text to clean..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" data-clean="spaces">Remove Extra Spaces</button>
+                            <button class="btn" data-clean="lines">Remove Empty Lines</button>
+                            <button class="btn" data-clean="special">Remove Special Characters</button>
+                        </div>
+                        <textarea id="cleanOutput" placeholder="Cleaned text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Base64 Converter -->
+                <div class="tool-card" id="base64-converter">
+                    <div class="tool-header">
+                        <i class="fas fa-file-code"></i>
+                        <h3>Base64 Converter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="comparison-inputs">
+                            <div>
+                                <h4>Encode</h4>
+                                <textarea id="base64Encode" placeholder="Enter text to encode..."></textarea>
+                                <button class="btn" data-base64="encode">Encode</button>
+                                <textarea id="base64Encoded" placeholder="Base64 encoded text will appear here..." readonly></textarea>
+                        </div>
+                            <div>
+                                <h4>Decode</h4>
+                                <textarea id="base64Decode" placeholder="Enter Base64 to decode..."></textarea>
+                                <button class="btn" data-base64="decode">Decode</button>
+                                <textarea id="base64Decoded" placeholder="Decoded text will appear here..." readonly></textarea>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Slug Generator -->
+                <div class="tool-card" id="slug-generator">
+                    <div class="tool-header">
+                        <i class="fas fa-link"></i>
+                        <h3>Slug Generator</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="slugInput" placeholder="Enter text to convert to slug..."></textarea>
+                        <button class="btn" id="generateSlugBtn">Generate Slug</button>
+                        <textarea id="slugOutput" placeholder="Generated slug will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Morse Code -->
+                <div class="tool-card" id="morse-code">
+                    <div class="tool-header">
+                        <i class="fas fa-wave-square"></i>
+                        <h3>Morse Code Converter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="comparison-inputs">
+                            <div>
+                                <h4>Encode</h4>
+                                <textarea id="morseEncode" placeholder="Enter text to encode..."></textarea>
+                                <button class="btn" data-morse="encode">Encode</button>
+                                <textarea id="morseEncoded" placeholder="Morse code will appear here..." readonly></textarea>
+                        </div>
+                            <div>
+                                <h4>Decode</h4>
+                                <textarea id="morseDecode" placeholder="Enter Morse code to decode..."></textarea>
+                                <button class="btn" data-morse="decode">Decode</button>
+                                <textarea id="morseDecoded" placeholder="Decoded text will appear here..." readonly></textarea>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Lorem Ipsum -->
+                <div class="tool-card" id="lorem-ipsum">
+                    <div class="tool-header">
+                        <i class="fas fa-paragraph"></i>
+                        <h3>Lorem Ipsum Generator</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="paragraphCount" value="3" min="1" max="10">
+                            <button class="btn" id="generateLoremBtn">Generate</button>
+                        </div>
+                        <textarea id="loremOutput" placeholder="Generated Lorem Ipsum will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Text Sorter -->
+                <div class="tool-card" id="text-sorter">
+                    <div class="tool-header">
+                        <i class="fas fa-sort"></i>
+                        <h3>Text Sorter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="sortInput" placeholder="Enter text to sort (one item per line)..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" data-sort="alpha">Sort Alphabetically</button>
+                            <button class="btn" data-sort="length">Sort by Length</button>
+                        </div>
+                        <textarea id="sortOutput" placeholder="Sorted text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Binary Converter -->
+                <div class="tool-card" id="binary-converter">
+                    <div class="tool-header">
+                        <i class="fas fa-code"></i>
+                        <h3>Binary Converter</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="comparison-inputs">
+                            <div>
+                                <h4>Text to Binary</h4>
+                                <textarea id="textToBinary" placeholder="Enter text to convert..."></textarea>
+                                <button class="btn" data-convert="toBinary">Convert to Binary</button>
+                                <textarea id="binaryOutput" placeholder="Binary will appear here..." readonly></textarea>
+                        </div>
+                            <div>
+                                <h4>Binary to Text</h4>
+                                <textarea id="binaryToText" placeholder="Enter binary to convert..."></textarea>
+                                <button class="btn" data-convert="toText">Convert to Text</button>
+                                <textarea id="textOutput" placeholder="Text will appear here..." readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Diff Checker -->
+                <div class="tool-card" id="text-diff">
+                    <div class="tool-header">
+                        <i class="fas fa-code-compare"></i>
+                        <h3>Text Diff Checker</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="comparison-inputs">
+                            <textarea id="diffText1" placeholder="Enter first text..."></textarea>
+                            <textarea id="diffText2" placeholder="Enter second text..."></textarea>
+                        </div>
+                        <button class="btn" id="compareBtn">Compare</button>
+                        <textarea id="diffOutput" placeholder="Differences will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Swap Letters -->
+                <div class="tool-card" id="swap-letters">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Swap Letters</h3>
+                        </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="swapLetter1" placeholder="First letter">
+                            <input type="text" id="swapLetter2" placeholder="Second letter">
+                        </div>
+                        <textarea id="swapLettersInput" placeholder="Enter text to swap letters in..."></textarea>
+                        <button class="btn" id="swapLettersBtn">Swap Letters</button>
+                        <textarea id="swapLettersOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Swap Words -->
+                <div class="tool-card" id="swap-words">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Swap Words</h3>
+                        </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="swapWord1" placeholder="First word">
+                            <input type="text" id="swapWord2" placeholder="Second word">
+                        </div>
+                        <textarea id="swapWordsInput" placeholder="Enter text to swap words in..."></textarea>
+                        <button class="btn" id="swapWordsBtn">Swap Words</button>
+                        <textarea id="swapWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Duplicate Words -->
+                <div class="tool-card" id="duplicate-words">
+                    <div class="tool-header">
+                        <i class="fas fa-copy"></i>
+                        <h3>Duplicate Words</h3>
+                        </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="duplicateCount" value="2" min="1" placeholder="Number of copies">
+                        </div>
+                        <textarea id="duplicateWordsInput" placeholder="Enter text to duplicate words in..."></textarea>
+                        <button class="btn" id="duplicateWordsBtn">Duplicate Words</button>
+                        <textarea id="duplicateWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Words -->
+                <div class="tool-card" id="remove-words">
+                    <div class="tool-header">
+                        <i class="fas fa-eraser"></i>
+                        <h3>Remove Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="removeWordsInput" placeholder="Enter text to remove words from..."></textarea>
+                        <div class="input-group">
+                            <input type="text" id="wordToRemove" placeholder="Enter word to remove">
+                        </div>
+                        <button class="btn" id="removeWordsBtn">Remove Words</button>
+                        <textarea id="removeWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Duplicate Sentences -->
+                <div class="tool-card" id="duplicate-sentences">
+                    <div class="tool-header">
+                        <i class="fas fa-copy"></i>
+                        <h3>Duplicate Sentences</h3>
+                        </div>
+                    <div class="tool-content">
+                        <textarea id="duplicateSentencesInput" placeholder="Enter text to duplicate sentences..."></textarea>
+                        <button class="btn" id="duplicateSentencesBtn">Duplicate Sentences</button>
+                        <textarea id="duplicateSentencesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Sentences -->
+                <div class="tool-card" id="remove-sentences">
+                    <div class="tool-header">
+                        <i class="fas fa-eraser"></i>
+                        <h3>Remove Sentences</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="sentenceToRemove" placeholder="Sentence to remove...">
+                        </div>
+                        <textarea id="removeSentencesInput" placeholder="Enter text to remove sentences from..."></textarea>
+                        <button class="btn" id="removeSentencesBtn">Remove Sentences</button>
+                        <textarea id="removeSentencesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Replace Words -->
+                <div class="tool-card" id="replace-words">
+                    <div class="tool-header">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Replace Words</h3>
+                        </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="wordToReplace" placeholder="Word to replace...">
+                            <input type="text" id="replacementWord" placeholder="Replacement word...">
+                        </div>
+                        <textarea id="replaceWordsInput" placeholder="Enter text to replace words in..."></textarea>
+                        <button class="btn" id="replaceWordsBtn">Replace Words</button>
+                        <textarea id="replaceWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Random Words -->
+                <div class="tool-card" id="add-random-words">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Add Random Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="addRandomWordsInput" placeholder="Enter text to add random words to..."></textarea>
+                        <button class="btn" id="addRandomWordsBtn">Add Random Words</button>
+                        <textarea id="addRandomWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Random Letters -->
+                <div class="tool-card" id="add-random-letters">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Add Random Letters</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="addRandomLettersInput" placeholder="Enter text to add random letters to..."></textarea>
+                        <button class="btn" id="addRandomLettersBtn">Add Random Letters</button>
+                        <textarea id="addRandomLettersOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Introduce Errors -->
+                <div class="tool-card" id="introduce-errors">
+                    <div class="tool-header">
+                        <i class="fas fa-bug"></i>
+                        <h3>Introduce Errors</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="errorRate" value="0.1" min="0" max="1" step="0.1">
+                        </div>
+                        <textarea id="introduceErrorsInput" placeholder="Enter text to introduce errors to..."></textarea>
+                        <button class="btn" id="introduceErrorsBtn">Introduce Errors</button>
+                        <textarea id="introduceErrorsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Fake Text -->
+                <div class="tool-card" id="fake-text">
+                    <div class="tool-header">
+                        <i class="fas fa-mask"></i>
+                        <h3>Fake Text Generator</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="fakeTextLength" value="50" min="1">
+                        </div>
+                        <button class="btn" id="generateFakeTextBtn">Generate</button>
+                        <textarea id="fakeTextOutput" placeholder="Generated fake text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Random Letters -->
+                <div class="tool-card" id="remove-random-letters">
+                    <div class="tool-header">
+                        <i class="fas fa-eraser"></i>
+                        <h3>Remove Random Letters</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="letterRemovalRate" value="0.1" min="0" max="1" step="0.1">
+                        </div>
+                        <textarea id="removeRandomLettersInput" placeholder="Enter text to remove random letters from..."></textarea>
+                        <button class="btn" id="removeRandomLettersBtn">Remove Random Letters</button>
+                        <textarea id="removeRandomLettersOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Random Symbols -->
+                <div class="tool-card" id="remove-random-symbols">
+                    <div class="tool-header">
+                        <i class="fas fa-eraser"></i>
+                        <h3>Remove Random Symbols</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="symbolRemovalRate" value="0.1" min="0" max="1" step="0.1">
+                        </div>
+                        <textarea id="removeRandomSymbolsInput" placeholder="Enter text to remove random symbols from..."></textarea>
+                        <button class="btn" id="removeRandomSymbolsBtn">Remove Random Symbols</button>
+                        <textarea id="removeRandomSymbolsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Symbols Around Words -->
+                <div class="tool-card" id="add-symbols-around-words">
+                    <div class="tool-header">
+                        <i class="fas fa-asterisk"></i>
+                        <h3>Add Symbols Around Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="addSymbolsInput" placeholder="Enter text to add symbols around words..."></textarea>
+                        <button class="btn" id="addSymbolsBtn">Add Symbols</button>
+                        <textarea id="addSymbolsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Symbols Around Words -->
+                <div class="tool-card" id="remove-symbols-around-words">
+                    <div class="tool-header">
+                        <i class="fas fa-minus-circle"></i>
+                        <h3>Remove Symbols Around Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="removeSymbolsInput" placeholder="Enter text to remove symbols around words..."></textarea>
+                        <button class="btn" id="removeSymbolsBtn">Remove Symbols</button>
+                        <textarea id="removeSymbolsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Prefix Lines -->
+                <div class="tool-card" id="add-prefix-lines">
+                    <div class="tool-header">
+                        <i class="fas fa-arrow-right"></i>
+                        <h3>Add Prefix to Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="prefixText" placeholder="Prefix text...">
+                        </div>
+                        <textarea id="addPrefixLinesInput" placeholder="Enter text to add prefix to lines..."></textarea>
+                        <button class="btn" id="addPrefixLinesBtn">Add Prefix</button>
+                        <textarea id="addPrefixLinesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Suffix Lines -->
+                <div class="tool-card" id="add-suffix-lines">
+                    <div class="tool-header">
+                        <i class="fas fa-arrow-left"></i>
+                        <h3>Add Suffix to Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="suffixText" placeholder="Suffix text...">
+                        </div>
+                        <textarea id="addSuffixLinesInput" placeholder="Enter text to add suffix to lines..."></textarea>
+                        <button class="btn" id="addSuffixLinesBtn">Add Suffix</button>
+                        <textarea id="addSuffixLinesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Prefix Lines -->
+                <div class="tool-card" id="remove-prefix-lines">
+                    <div class="tool-header">
+                        <i class="fas fa-minus"></i>
+                        <h3>Remove Prefix from Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="prefixToRemove" placeholder="Prefix to remove...">
+                        </div>
+                        <textarea id="removePrefixLinesInput" placeholder="Enter text to remove prefix from lines..."></textarea>
+                        <button class="btn" id="removePrefixLinesBtn">Remove Prefix</button>
+                        <textarea id="removePrefixLinesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Suffix Lines -->
+                <div class="tool-card" id="remove-suffix-lines">
+                    <div class="tool-header">
+                        <i class="fas fa-minus"></i>
+                        <h3>Remove Suffix from Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="suffixToRemove" placeholder="Suffix to remove...">
+                        </div>
+                        <textarea id="removeSuffixLinesInput" placeholder="Enter text to remove suffix from lines..."></textarea>
+                        <button class="btn" id="removeSuffixLinesBtn">Remove Suffix</button>
+                        <textarea id="removeSuffixLinesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Prefix Words -->
+                <div class="tool-card" id="add-prefix-words">
+                    <div class="tool-header">
+                        <i class="fas fa-arrow-right"></i>
+                        <h3>Add Prefix to Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="prefixWord" placeholder="Prefix word...">
+                        </div>
+                        <textarea id="addPrefixWordsInput" placeholder="Enter text to add prefix to words..."></textarea>
+                        <button class="btn" id="addPrefixWordsBtn">Add Prefix</button>
+                        <textarea id="addPrefixWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Add Suffix Words -->
+                <div class="tool-card" id="add-suffix-words">
+                    <div class="tool-header">
+                        <i class="fas fa-arrow-left"></i>
+                        <h3>Add Suffix to Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="suffixWord" placeholder="Suffix word...">
+                        </div>
+                        <textarea id="addSuffixWordsInput" placeholder="Enter text to add suffix to words..."></textarea>
+                        <button class="btn" id="addSuffixWordsBtn">Add Suffix</button>
+                        <textarea id="addSuffixWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Sort Symbols -->
+                <div class="tool-card" id="sort-symbols">
+                    <div class="tool-header">
+                        <i class="fas fa-sort-alpha-down"></i>
+                        <h3>Sort Symbols</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="sortSymbolsInput" placeholder="Enter text to sort symbols..."></textarea>
+                        <button class="btn" id="sortSymbolsBtn">Sort Symbols</button>
+                        <textarea id="sortSymbolsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Randomize Letters -->
+                <div class="tool-card" id="randomize-letters">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Randomize Letters</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="randomizeLettersInput" placeholder="Enter text to randomize letters..."></textarea>
+                        <button class="btn" id="randomizeLettersBtn">Randomize Letters</button>
+                        <textarea id="randomizeLettersOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Scramble Words -->
+                <div class="tool-card" id="scramble-words">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Scramble Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="scrambleWordsInput" placeholder="Enter text to scramble words..."></textarea>
+                        <button class="btn" id="scrambleWordsBtn">Scramble Words</button>
+                        <textarea id="scrambleWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Randomize Words -->
+                <div class="tool-card" id="randomize-words">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Randomize Words</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="randomizeWordsInput" placeholder="Enter text to randomize words..."></textarea>
+                        <button class="btn" id="randomizeWordsBtn">Randomize Words</button>
+                        <textarea id="randomizeWordsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Randomize Lines -->
+                <div class="tool-card" id="randomize-lines">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Randomize Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="randomizeLinesInput" placeholder="Enter text to randomize lines..."></textarea>
+                        <button class="btn" id="randomizeLinesBtn">Randomize Lines</button>
+                        <textarea id="randomizeLinesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Randomize Sentences -->
+                <div class="tool-card" id="randomize-sentences">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Randomize Sentences</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="randomizeSentencesInput" placeholder="Enter text to randomize sentences..."></textarea>
+                        <button class="btn" id="randomizeSentencesBtn">Randomize Sentences</button>
+                        <textarea id="randomizeSentencesOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Randomize Paragraphs -->
+                <div class="tool-card" id="randomize-paragraphs">
+                    <div class="tool-header">
+                        <i class="fas fa-random"></i>
+                        <h3>Randomize Paragraphs</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="randomizeParagraphsInput" placeholder="Enter text to randomize paragraphs..."></textarea>
+                        <button class="btn" id="randomizeParagraphsBtn">Randomize Paragraphs</button>
+                        <textarea id="randomizeParagraphsOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Calculate Letter Sum -->
+                <div class="tool-card" id="calculate-letter-sum">
+                    <div class="tool-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Calculate Letter Sum</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="letterSumInput" placeholder="Enter text to calculate letter sum..."></textarea>
+                        <button class="btn" id="calculateLetterSumBtn">Calculate Sum</button>
+                        <textarea id="letterSumOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Unwrap Text -->
+                <div class="tool-card" id="unwrap-text">
+                    <div class="tool-header">
+                        <i class="fas fa-compress-alt"></i>
+                        <h3>Unwrap Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="unwrapTextInput" placeholder="Enter text to unwrap..."></textarea>
+                        <button class="btn" id="unwrapTextBtn">Unwrap Text</button>
+                        <textarea id="unwrapTextOutput" placeholder="Result will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Reverse Text -->
+                <div class="tool-card" id="reverse-text">
+                    <div class="tool-header">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Reverse Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="reverseTextInput" placeholder="Enter text to reverse..."></textarea>
+                        <button class="btn" id="reverseTextBtn">Reverse Text</button>
+                        <textarea id="reverseTextOutput" placeholder="Reversed text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Remove Duplicate Lines -->
+                <div class="tool-card" id="remove-duplicates">
+                    <div class="tool-header">
+                        <i class="fas fa-filter"></i>
+                        <h3>Remove Duplicate Lines</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="duplicateInput" placeholder="Paste text with duplicate lines..."></textarea>
+                        <button id="removeDuplicatesBtn" class="btn">Remove Duplicates</button>
+                        <textarea id="duplicateOutput" placeholder="Unique lines will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Split Text -->
+                <div class="tool-card" id="split-text">
+                    <div class="tool-header">
+                        <i class="fas fa-cut"></i>
+                        <h3>Split Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="splitDelimiter" placeholder="Delimiter (default: newline)">
+                        </div>
+                        <textarea id="splitTextInput" placeholder="Enter text to split..."></textarea>
+                        <button id="splitTextBtn" class="btn">Split Text</button>
+                        <textarea id="splitTextOutput" placeholder="Split text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Join Text -->
+                <div class="tool-card" id="join-text">
+                    <div class="tool-header">
+                        <i class="fas fa-link"></i>
+                        <h3>Join Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="text" id="joinDelimiter" placeholder="Delimiter (default: space)">
+                        </div>
+                        <textarea id="joinTextInput" placeholder="Enter text to join (one item per line)..."></textarea>
+                        <button id="joinTextBtn" class="btn">Join Text</button>
+                        <textarea id="joinTextOutput" placeholder="Joined text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Repeat Text -->
+                <div class="tool-card" id="repeat-text">
+                    <div class="tool-header">
+                        <i class="fas fa-redo"></i>
+                        <h3>Repeat Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="repeatCount" value="2" min="1" placeholder="Number of repetitions">
+                        </div>
+                        <textarea id="repeatTextInput" placeholder="Enter text to repeat..."></textarea>
+                        <button id="repeatTextBtn" class="btn">Repeat Text</button>
+                        <textarea id="repeatTextOutput" placeholder="Repeated text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Truncate Text -->
+                <div class="tool-card" id="truncate-text">
+                    <div class="tool-header">
+                        <i class="fas fa-scissors"></i>
+                        <h3>Truncate Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="truncateLength" value="100" min="1" placeholder="Maximum length">
+                            <input type="text" id="truncateSuffix" value="..." placeholder="Suffix">
+                        </div>
+                        <textarea id="truncateTextInput" placeholder="Enter text to truncate..."></textarea>
+                        <button id="truncateTextBtn" class="btn">Truncate Text</button>
+                        <textarea id="truncateTextOutput" placeholder="Truncated text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Slice Text -->
+                <div class="tool-card" id="slice-text">
+                    <div class="tool-header">
+                        <i class="fas fa-crop"></i>
+                        <h3>Slice Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="sliceStart" value="0" min="0" placeholder="Start position">
+                            <input type="number" id="sliceEnd" placeholder="End position (optional)">
+                        </div>
+                        <textarea id="sliceTextInput" placeholder="Enter text to slice..."></textarea>
+                        <button id="sliceTextBtn" class="btn">Slice Text</button>
+                        <textarea id="sliceTextOutput" placeholder="Sliced text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Reverse Words -->
+                <div class="tool-card" id="reverse-words">
+                    <h3><i class="fas fa-exchange-alt"></i> Reverse Words</h3>
+                    <div class="tool-content">
+                        <textarea id="reverseWordsInput" placeholder="Enter text to reverse words..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" id="reverseWordsBtn">Reverse Words</button>
+                            <button class="btn" id="reverseWordsPreserveBtn">Reverse Words (Preserve Case)</button>
+                        </div>
+                        <textarea id="reverseWordsOutput" placeholder="Reversed words will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Reverse Sentences -->
+                <div class="tool-card" id="reverse-sentences">
+                    <h3><i class="fas fa-exchange-alt"></i> Reverse Sentences</h3>
+                    <div class="tool-content">
+                        <textarea id="reverseSentencesInput" placeholder="Enter text to reverse sentences..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" id="reverseSentencesBtn">Reverse Sentences</button>
+                            <button class="btn" id="reverseSentencesPreserveBtn">Reverse Sentences (Preserve Case)</button>
+                        </div>
+                        <textarea id="reverseSentencesOutput" placeholder="Reversed sentences will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Reverse Paragraphs -->
+                <div class="tool-card" id="reverse-paragraphs">
+                    <h3><i class="fas fa-exchange-alt"></i> Reverse Paragraphs</h3>
+                    <div class="tool-content">
+                        <textarea id="reverseParagraphsInput" placeholder="Enter text to reverse paragraphs..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" id="reverseParagraphsBtn">Reverse Paragraphs</button>
+                            <button class="btn" id="reverseParagraphsPreserveBtn">Reverse Paragraphs (Preserve Case)</button>
+                        </div>
+                        <textarea id="reverseParagraphsOutput" placeholder="Reversed paragraphs will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Trim Text -->
+                <div class="tool-card" id="trim-text">
+                    <div class="tool-header">
+                        <i class="fas fa-compress"></i>
+                        <h3>Trim Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="trimTextInput" placeholder="Enter text to trim..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" id="trimStartBtn">Trim Start</button>
+                            <button class="btn" id="trimEndBtn">Trim End</button>
+                            <button class="btn" id="trimBothBtn">Trim Both</button>
+                        </div>
+                        <textarea id="trimTextOutput" placeholder="Trimmed text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Pad Text -->
+                <div class="tool-card" id="pad-text">
+                    <div class="tool-header">
+                        <i class="fas fa-expand"></i>
+                        <h3>Pad Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="padLength" value="20" min="1" placeholder="Target length">
+                            <input type="text" id="padChar" value=" " placeholder="Padding character">
+                            <select id="padDirection">
+                                <option value="start">Start</option>
+                                <option value="end">End</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <textarea id="padTextInput" placeholder="Enter text to pad..."></textarea>
+                        <button class="btn" id="padTextBtn">Pad Text</button>
+                        <textarea id="padTextOutput" placeholder="Padded text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Align Text -->
+                <div class="tool-card" id="align-text">
+                    <div class="tool-header">
+                        <i class="fas fa-align-left"></i>
+                        <h3>Align Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <select id="alignDirection">
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                            <input type="number" id="alignWidth" value="80" min="1" placeholder="Line width">
+                        </div>
+                        <textarea id="alignTextInput" placeholder="Enter text to align..."></textarea>
+                        <button class="btn" id="alignTextBtn">Align Text</button>
+                        <textarea id="alignTextOutput" placeholder="Aligned text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Indent Text -->
+                <div class="tool-card" id="indent-text">
+                    <div class="tool-header">
+                        <i class="fas fa-indent"></i>
+                        <h3>Indent Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="indentSize" value="4" min="1" placeholder="Indent size">
+                            <select id="indentChar">
+                                <option value="space">Spaces</option>
+                                <option value="tab">Tabs</option>
+                            </select>
+                        </div>
+                        <textarea id="indentTextInput" placeholder="Enter text to indent..."></textarea>
+                        <button class="btn" id="indentTextBtn">Indent Text</button>
+                        <textarea id="indentTextOutput" placeholder="Indented text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Justify Text -->
+                <div class="tool-card" id="justify-text">
+                    <div class="tool-header">
+                        <i class="fas fa-align-justify"></i>
+                        <h3>Justify Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="justifyWidth" value="80" min="1" placeholder="Line width">
+                        </div>
+                        <textarea id="justifyTextInput" placeholder="Enter text to justify..."></textarea>
+                        <button class="btn" id="justifyTextBtn">Justify Text</button>
+                        <textarea id="justifyTextOutput" placeholder="Justified text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Wrap Text -->
+                <div class="tool-card" id="wrap-text">
+                    <div class="tool-header">
+                        <i class="fas fa-text-width"></i>
+                        <h3>Wrap Text</h3>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <input type="number" id="wrapWidth" value="80" min="1" placeholder="Line width">
+                            <select id="wrapMode">
+                                <option value="word">Word Wrap</option>
+                                <option value="char">Character Wrap</option>
+                            </select>
+                        </div>
+                        <textarea id="wrapTextInput" placeholder="Enter text to wrap..."></textarea>
+                        <button class="btn" id="wrapTextBtn">Wrap Text</button>
+                        <textarea id="wrapTextOutput" placeholder="Wrapped text will appear here..." readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+ 
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for free online tools and utilities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="pages/image-tools.html">Image Tools</a>
+                <a href="pages/color-tools.html">Color Tools</a>
+                <a href="pages/math-tools.html">Math Tools</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>Found a bug? Have a suggestion?</p>
+                <a href="mailto:rahimullahebrahimkhail564700@gmail.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 allFreeTools. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="../js/main.js"></script>
+    <script src="../js/text-tools.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Navigation and Tool Card Management
+        const quickNavLinks = document.querySelectorAll('.quick-nav-links a');
+        const toolCards = document.querySelectorAll('.tool-card');
+
+        // Function to show a specific tool card
+        function showToolCard(cardId) {
+            toolCards.forEach(card => {
+                if (card.id === cardId) {
+                    card.classList.add('active');
+                    // Scroll to the card with smooth behavior
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+        }
+
+        // Show the first tool card by default
+        showToolCard('text-case-converter');
+
+        // Handle quick navigation clicks
+        quickNavLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                quickNavLinks.forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Get target tool card ID
+                const targetId = this.getAttribute('href').substring(1);
+                
+                // Show the target tool card
+                showToolCard(targetId);
+            });
+        });
+
+        // Text Case Converter
+        const caseInput = document.getElementById('caseInput');
+        const caseOutput = document.getElementById('caseOutput');
+        const caseButtons = document.querySelectorAll('[data-case]');
+
+        caseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const text = caseInput.value;
+                const caseType = this.dataset.case;
+                let result = '';
+
+                switch(caseType) {
+                    case 'upper':
+                        result = text.toUpperCase();
+                        break;
+                    case 'lower':
+                        result = text.toLowerCase();
+                        break;
+                    case 'sentence':
+                        result = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+                        break;
+                    case 'title':
+                        result = text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                        break;
+                }
+
+                caseOutput.value = result;
+            });
+        });
+
+        // Word Counter
+        const counterInput = document.getElementById('counterInput');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const lineCount = document.getElementById('lineCount');
+        const paragraphCount = document.getElementById('paragraphCount');
+
+        function updateCounter() {
+            const text = counterInput.value;
+            
+            // Character count
+            charCount.textContent = text.length;
+            
+            // Word count
+            const words = text.trim().split(/\s+/);
+            wordCount.textContent = text.trim() ? words.length : 0;
+            
+            // Line count
+            const lines = text.split('\n');
+            lineCount.textContent = lines.length;
+            
+            // Paragraph count
+            const paragraphs = text.split(/\n\s*\n/);
+            paragraphCount.textContent = text.trim() ? paragraphs.length : 0;
+        }
+
+        counterInput.addEventListener('input', updateCounter);
+
+        // JSON Formatter
+        const jsonInput = document.getElementById('jsonInput');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const jsonError = document.getElementById('jsonError');
+        const formatJsonBtn = document.getElementById('formatJsonBtn');
+        const minifyJsonBtn = document.getElementById('minifyJsonBtn');
+        const validateJsonBtn = document.getElementById('validateJsonBtn');
+
+        function formatJSON(json, pretty = true) {
+            try {
+                const obj = JSON.parse(json);
+                return pretty ? JSON.stringify(obj, null, 2) : JSON.stringify(obj);
+            } catch (e) {
+                jsonError.textContent = 'Invalid JSON: ' + e.message;
+                return null;
+            }
+        }
+
+        formatJsonBtn.addEventListener('click', () => {
+            const formatted = formatJSON(jsonInput.value, true);
+            if (formatted) {
+                jsonOutput.textContent = formatted;
+                jsonError.textContent = '';
+            }
+        });
+
+        minifyJsonBtn.addEventListener('click', () => {
+            const minified = formatJSON(jsonInput.value, false);
+            if (minified) {
+                jsonOutput.textContent = minified;
+                jsonError.textContent = '';
+            }
+        });
+
+        validateJsonBtn.addEventListener('click', () => {
+            try {
+                JSON.parse(jsonInput.value);
+                jsonError.textContent = 'Valid JSON';
+                jsonError.style.color = 'green';
+            } catch (e) {
+                jsonError.textContent = 'Invalid JSON: ' + e.message;
+                jsonError.style.color = 'red';
+            }
+        });
+
+        // Remove Duplicates
+        const duplicateInput = document.getElementById('duplicateInput');
+        const duplicateOutput = document.getElementById('duplicateOutput');
+        const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
+
+        removeDuplicatesBtn.addEventListener('click', () => {
+            const lines = duplicateInput.value.split('\n');
+            const uniqueLines = [...new Set(lines)];
+            duplicateOutput.value = uniqueLines.join('\n');
+        });
+
+        // Initialize all tool cards as hidden except the first one
+        toolCards.forEach((card, index) => {
+            if (index !== 0) {
+                card.classList.remove('active');
+            }
+        });
+
+        // Add copy functionality to all output textareas
+        document.querySelectorAll('textarea[readonly]').forEach(textarea => {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn copy-btn';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(textarea.value);
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            });
+            textarea.parentNode.insertBefore(copyBtn, textarea.nextSibling);
+        });
+    });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1338 @@
+/* Scientific Calculator Styles */
+.calculator-display {
+    margin-bottom: 15px;
+}
+
+.calculator-display input {
+    width: 100%;
+    padding: 15px;
+    font-size: 24px;
+    text-align: right;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    font-family: 'Inter', monospace;
+}
+
+.scientific-functions {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.calc-btn {
+    padding: 12px;
+    font-size: 18px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.calc-btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.calc-btn:active {
+    transform: translateY(1px);
+}
+
+.calc-btn[data-action="operator"] {
+    background-color: #f8f9fa;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.calc-btn[data-action="equals"] {
+    background-color: #007bff;
+    color: white;
+    font-weight: 500;
+}
+
+.calc-btn[data-action="equals"]:hover {
+    background-color: #0056b3;
+}
+
+.calc-btn[data-action="clear"],
+.calc-btn[data-action="backspace"] {
+    background-color: #dc3545;
+    color: white;
+    font-weight: 500;
+}
+
+.calc-btn[data-action="clear"]:hover,
+.calc-btn[data-action="backspace"]:hover {
+    background-color: #c82333;
+}
+
+.calc-btn[data-action="function"],
+.calc-btn[data-action="constant"] {
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: 500;
+}
+
+.calc-btn[data-action="function"]:hover,
+.calc-btn[data-action="constant"]:hover {
+    background-color: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scientific-functions {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .calculator-buttons {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .scientific-functions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .calculator-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .calc-btn {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+
+/* Matrix Calculator Styles */
+.matrix-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin: 20px 0;
+}
+
+.matrix-container {
+    flex: 1;
+    min-width: 250px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.matrix-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.matrix-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.matrix-dimensions {
+    display: flex;
+    gap: 10px;
+}
+
+.dimension-selector {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dimension-selector label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.dimension-selector select {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.matrix-grid {
+    display: inline-block;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.matrix-row {
+    display: flex;
+}
+
+.matrix-cell {
+    width: 60px;
+    height: 40px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.matrix-cell:focus {
+    outline: 2px solid var(--primary-color);
+    z-index: 1;
+    position: relative;
+}
+
+.matrix-operator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    min-width: 40px;
+}
+
+.matrix-actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.matrix-actions .btn {
+    padding: 8px 20px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+#matrix-result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    min-height: 60px;
+    overflow-x: auto;
+}
+
+.result-matrix {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.result-matrix h4 {
+    margin: 0 0 10px 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.matrix-result-display {
+    background: var(--input-bg);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--text-color);
+    white-space: normal;
+    word-break: break-all;
+}
+
+.matrix-result-display br {
+    display: block;
+    content: '';
+    margin: 4px 0;
+}
+
+.copy-matrix-btn {
+    align-self: flex-start;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.copy-matrix-btn i {
+    font-size: 0.9em;
+}
+
+.matrix-grid {
+    display: inline-block;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.matrix-row {
+    display: flex;
+}
+
+.matrix-cell {
+    width: 60px;
+    height: 40px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.matrix-cell:focus {
+    outline: 2px solid var(--primary-color);
+    z-index: 1;
+    position: relative;
+}
+
+.result-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    min-width: 60px;
+    min-height: 40px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .matrix-inputs {
+        flex-direction: column;
+    }
+    
+    .matrix-container {
+        width: 100%;
+    }
+    
+    .matrix-operator {
+        transform: rotate(90deg);
+        margin: 10px 0;
+    }
+}
+
+/* Tool Card Styles */
+.tool-card {
+    display: none;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tool-card.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Function Plotter Styles */
+.function-plotter {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.function-plotter .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.function-plotter .range-inputs {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.function-plotter .range-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.function-plotter .range-group label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    min-width: 60px;
+}
+
+.function-plotter .range-group input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+.function-plotter .graph-container {
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--input-bg);
+}
+
+.function-plotter .error-message {
+    color: var(--danger-color);
+    padding: 1rem;
+    text-align: center;
+    background: var(--danger-bg);
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+/* Number Converter Styles */
+.number-converter {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.conversion-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.conversion-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.conversion-header h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.conversion-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.number-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    transition: border-color 0.3s ease;
+}
+
+.number-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.number-input.error {
+    border-color: var(--error-color);
+}
+
+.convert-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.convert-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.convert-btn:active {
+    transform: translateY(1px);
+}
+
+.result-display {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--result-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.result-content {
+    color: var(--text-primary);
+}
+
+.result-content h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.result-content p {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.explanation {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.explanation h5 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.error-message {
+    color: var(--error-color);
+    padding: 0.75rem;
+    background-color: var(--error-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .conversion-container {
+        padding: 1.5rem;
+    }
+
+    .conversion-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .number-input {
+        padding: 0.5rem;
+    }
+
+    .convert-btn {
+        padding: 0.5rem;
+    }
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    .conversion-container {
+        background-color: var(--card-bg-dark);
+    }
+
+    .number-input {
+        background-color: var(--input-bg-dark);
+        border-color: var(--border-color-dark);
+    }
+
+    .result-display {
+        background-color: var(--result-bg-dark);
+        border-color: var(--border-color-dark);
+    }
+
+    .explanation {
+        border-color: var(--border-color-dark);
+    }
+
+    .tool-card {
+        background-color: #2d2d2d;
+        color: #fff;
+    }
+}
+
+.conversion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.conversion-card {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.conversion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.conversion-card.error {
+    border-color: var(--error-color);
+    background: rgba(var(--error-rgb), 0.05);
+}
+
+.conversion-card .conversion-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    text-align: left;
+}
+
+.conversion-card .conversion-header i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.conversion-card .conversion-header h4 {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.conversion-value {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    word-break: break-all;
+    padding: 0.5rem;
+    background: var(--card-bg);
+    border-radius: 4px;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.info-message {
+    color: var(--info-color, #0c5460);
+    padding: 15px;
+    background: var(--info-bg, #d1ecf1);
+    border-radius: 8px;
+    border: 1px solid var(--info-border, #bee5eb);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    justify-content: center;
+}
+
+.info-message::before {
+    content: "ℹ️";
+    font-size: 1.2rem;
+}
+
+.prime-factorization {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.prime-factorization .conversion-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.prime-factorization .conversion-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.prime-factorization .conversion-header h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.prime-factorization .conversion-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.prime-factorization .conversion-input-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.prime-factorization .conversion-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prime-factorization .conversion-group label {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.prime-factorization .input-wrapper {
+    position: relative;
+}
+
+.prime-factorization .number-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    transition: all 0.3s ease;
+}
+
+.prime-factorization .number-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    outline: none;
+}
+
+.prime-factorization .number-input.error {
+    border-color: var(--error-color);
+}
+
+/* Prime Factorization Calculator Styles */
+#prime-factorization .tool-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#prime-factorization .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#prime-factorization .number-input {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+#prime-factorization .btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    align-self: flex-start;
+}
+
+#prime-factorization .btn:hover {
+    background-color: var(--primary-dark);
+}
+
+#factorization-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: var(--result-bg);
+    min-height: 50px;
+}
+
+#factorization-result .result {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+#factorization-result .number {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+#factorization-result .factors {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+#factorization-result .prime-check {
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+#factorization-result .loading {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+#factorization-result .error {
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.prime-factorization .convert-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    height: fit-content;
+}
+
+.prime-factorization .convert-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.prime-factorization .convert-btn:active {
+    transform: translateY(0);
+}
+
+.prime-factorization .convert-btn i {
+    font-size: 1rem;
+}
+
+.prime-factorization .result-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prime-factorization .result-item {
+    margin-bottom: 1rem;
+}
+
+.prime-factorization .result-item:last-child {
+    margin-bottom: 0;
+}
+
+.prime-factorization .result-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.prime-factorization .result-value {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.prime-factorization .error-message {
+    color: var(--error-color);
+    background-color: var(--error-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prime-factorization .info-message {
+    color: var(--text-secondary);
+    background-color: var(--info-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .prime-factorization .conversion-input-group {
+        grid-template-columns: 1fr;
+    }
+
+    .prime-factorization .convert-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .prime-factorization .conversion-container,
+    .prime-factorization .result-container {
+        background-color: var(--card-bg-dark);
+    }
+
+    .prime-factorization .number-input {
+        background-color: var(--input-bg-dark);
+    }
+}
+
+.gcd-lcm-calculator {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.gcd-lcm-calculator .conversion-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.gcd-lcm-calculator .conversion-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.gcd-lcm-calculator .conversion-header h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.gcd-lcm-calculator .conversion-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.gcd-lcm-calculator .conversion-input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.gcd-lcm-calculator .conversion-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.gcd-lcm-calculator .conversion-group label {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.gcd-lcm-calculator .input-wrapper {
+    position: relative;
+}
+
+.gcd-lcm-calculator .number-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    transition: all 0.3s ease;
+}
+
+.gcd-lcm-calculator .number-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    outline: none;
+}
+
+.gcd-lcm-calculator .number-input.error {
+    border-color: var(--error-color);
+}
+
+.gcd-lcm-calculator .convert-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    height: fit-content;
+}
+
+.gcd-lcm-calculator .convert-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.gcd-lcm-calculator .convert-btn:active {
+    transform: translateY(0);
+}
+
+.gcd-lcm-calculator .convert-btn i {
+    font-size: 1rem;
+}
+
+.gcd-lcm-calculator .result-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gcd-lcm-calculator .result-item {
+    margin-bottom: 1rem;
+}
+
+.gcd-lcm-calculator .result-item:last-child {
+    margin-bottom: 0;
+}
+
+.gcd-lcm-calculator .result-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.gcd-lcm-calculator .result-value {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.gcd-lcm-calculator .error-message {
+    color: var(--error-color);
+    background-color: var(--error-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gcd-lcm-calculator .info-message {
+    color: var(--text-secondary);
+    background-color: var(--info-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .gcd-lcm-calculator .conversion-input-group {
+        grid-template-columns: 1fr;
+    }
+
+    .gcd-lcm-calculator .convert-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .gcd-lcm-calculator .conversion-container,
+    .gcd-lcm-calculator .result-container {
+        background-color: var(--card-bg-dark);
+    }
+
+    .gcd-lcm-calculator .number-input {
+        background-color: var(--input-bg-dark);
+    }
+}
+
+/* Matrix Calculator Styles */
+.matrix-input {
+    display: grid;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.matrix-input input {
+    width: 60px;
+    text-align: center;
+}
+
+.matrix-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Equation Solver Styles */
+.equation-input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.equation-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Function Plotter Styles */
+.plot-container {
+    width: 100%;
+    height: 400px;
+    margin: 15px 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.plot-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+/* Statistics Calculator Styles */
+.data-input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.statistics-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Number Converter Styles */
+.conversion-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.conversion-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Prime Factorization Styles */
+.factorization-input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.factorization-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .matrix-result,
+    .equation-result,
+    .statistics-result,
+    .conversion-result,
+    .factorization-result {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .equation-input,
+    .data-input,
+    .factorization-input {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border-color: #4d4d4d;
+    }
+
+    .plot-container {
+        border-color: #4d4d4d;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .matrix-input input {
+        width: 50px;
+    }
+
+    .plot-controls,
+    .conversion-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .plot-container {
+        height: 300px;
+    }
+}
+
+/* Statistics Calculator Styles */
+.statistics-results {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.result-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-value {
+    font-family: monospace;
+    color: #007bff;
+    min-width: 80px;
+    text-align: right;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background-color: #e9ecef;
+    color: #007bff;
+}
+
+.copy-btn.copied {
+    color: #28a745;
+    background-color: #e9ecef;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .statistics-results {
+        background-color: #2d2d2d;
+        border-color: #4d4d4d;
+    }
+
+    .result-item {
+        border-bottom-color: #4d4d4d;
+    }
+
+    .result-label {
+        color: #e0e0e0;
+    }
+
+    .result-value {
+        color: #4dabf7;
+    }
+
+    .copy-btn {
+        color: #adb5bd;
+    }
+
+    .copy-btn:hover {
+        background-color: #4d4d4d;
+        color: #4dabf7;
+    }
+
+    .copy-btn.copied {
+        color: #40c057;
+        background-color: #4d4d4d;
+    }
+} 

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+     <meta charset="UTF-8"> 
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css"> 
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Quick Navigation */
+        .quick-nav {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Tool Cards */
+        .tool-card {
+            display: block;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0.5;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tool-header {
+            margin-bottom: 20px;
+        }
+
+        .tool-header h3 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .tool-header h3 i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .tool-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tool-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tool-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .tool-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .button-group button i {
+            font-size: 1rem;
+        }
+
+        .output-box {
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Hash Results */
+        .hash-results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hash-result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: 5px;
+        }
+
+        .hash-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .hash-value {
+            color: var(--text-color);
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        /* Timestamp Results */
+        .timestamp-results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timestamp-result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: 5px;
+        }
+
+        .timestamp-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+
+        .timestamp-value {
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        /* Regex Results */
+        .regex-match {
+            margin-bottom: 10px;
+        }
+
+        .match-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .match-count {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .regex-matches {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .match-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: var(--bg-color);
+            border-radius: 5px;
+        }
+
+        .match-index {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            min-width: 30px;
+        }
+
+        .match-text {
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        .regex-no-match {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .regex-error {
+            color: #ff4444;
+            font-size: 0.9rem;
+        }
+
+        /* Checkbox Group */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .custom-checkbox input {
+            display: none;
+        }
+
+        .checkbox-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox input:checked + .checkbox-circle {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .custom-checkbox input:checked + .checkbox-circle::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .custom-checkbox span:last-child {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Diff Container */
+        .diff-container {
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .diff-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .quick-nav-links {
+                grid-template-columns: 1fr;
+            }
+
+            .diff-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button-group button {
+                width: 100%;
+            }
+        }
+
+        textarea{
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <!-- <a href="file-conversion.html">File Conversion</a> -->
+                <a href="dev-tools.html" class="active">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="math-tools.html">Math Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Developer & Coding Tools</h1>
+            <p>Essential utilities for developers and programmers</p>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <h3 style="color: green !important; margin-bottom: 15px;"> Please choose an option ==></h3>
+            <div class="quick-nav-links">
+                <a href="#json-formatter" class="active"><i class="fas fa-code"></i> JSON Formatter</a>
+                <a href="#json-diff"><i class="fas fa-code-branch"></i> JSON Diff</a>
+                <a href="#uuid-generator"><i class="fas fa-fingerprint"></i> UUID Generator</a>
+                <a href="#hash-generator"><i class="fas fa-hashtag"></i> Hash Generator</a>
+                <a href="#timestamp-converter"><i class="fas fa-clock"></i> Timestamp Converter</a>
+                <a href="#lorem-ipsum"><i class="fas fa-paragraph"></i> Lorem Ipsum</a>
+                <a href="#regex-tester"><i class="fas fa-search"></i> Regex Tester</a>
+                <a href="#url-encoder"><i class="fas fa-link"></i> URL Encoder</a>
+                <a href="#base64-converter"><i class="fas fa-exchange-alt"></i> Base64 Converter</a>
+            </div>
+        </section>
+
+        <section class="tools-section">
+            <div class="tools-grid">
+                <!-- JSON Formatter -->
+               <!-- JSON Formatter -->
+               <div class="tool-card" id="json-formatter" style="scroll-margin-top: 100px;">
+                <h3><i class="fas fa-code"></i> JSON Formatter</h3>
+                <div class="tool-content">
+                    <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+                    <div class="button-group">
+                        <button class="btn" id="formatJsonBtn">Format JSON</button>
+                        <button class="btn" id="minifyJsonBtn">Minify JSON</button>
+                        <button class="btn" id="validateJsonBtn">Validate JSON</button>
+                    </div>
+                    <div id="jsonError" class="error-message"></div>
+                    <pre id="jsonOutput" class="json-output"></pre>
+                </div>
+            </div>
+
+
+                <!-- JSON Diff -->
+                <div class="tool-card" id="json-diff" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-code-branch"></i> JSON Diff</h3>
+                        <p>Compare two JSON objects and find differences</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="diff-inputs">
+                            <div class="input-group">
+                                <label for="json1">Original JSON</label>
+                                <textarea id="json1" placeholder="Paste first JSON here..." class="tool-textarea"></textarea>
+                            </div>
+                            <div class="input-group">
+                                <label for="json2">Modified JSON</label>
+                                <textarea id="json2" placeholder="Paste second JSON here..." class="tool-textarea"></textarea>
+                            </div>
+                        </div>
+                        <button id="compareBtn"><i class="fas fa-code-compare"></i> Compare JSON</button>
+                        <div id="diffOutput" class="diff-container"></div>
+                    </div>
+                </div>
+
+                <!-- UUID Generator -->
+                <div class="tool-card" id="uuid-generator" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-fingerprint"></i> UUID Generator</h3>
+                        <p>Generate unique identifiers</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="button-group">
+                            <button id="generateUuidBtn"><i class="fas fa-sync"></i> Generate UUID</button>
+                            <button id="copyUuidBtn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <div id="uuidOutput" class="output-box"></div>
+                    </div>
+                </div>
+
+                <!-- Hash Generator -->
+                <div class="tool-card" id="hash-generator" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-hashtag"></i> Hash Generator</h3>
+                        <p>Generate various hash values from your input</p>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="hashInput" placeholder="Enter text to hash..." class="tool-textarea"></textarea>
+                        <div class="hash-options">
+                            <button id="generateHashBtn"><i class="fas fa-hashtag"></i> Generate Hash</button>
+                            <button id="copyHashBtn"><i class="fas fa-copy"></i> Copy All</button>
+                        </div>
+                        <div id="hashResults" class="hash-results"></div>
+                    </div>
+                </div>
+
+                <!-- Timestamp Converter -->
+                <div class="tool-card" id="timestamp-converter" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-clock"></i> Timestamp Converter</h3>
+                        <p>Convert between different timestamp formats</p>
+                    </div>
+                    <div class="tool-content">
+                        <input type="text" id="timestampInput" placeholder="Enter timestamp or date..." class="tool-input">
+                        <div class="button-group">
+                            <button id="convertTimestampBtn"><i class="fas fa-sync"></i> Convert</button>
+                            <button id="copyTimestampBtn"><i class="fas fa-copy"></i> Copy All</button>
+                        </div>
+                        <div id="timestampResults" class="timestamp-results"></div>
+                    </div>
+                </div>
+
+                <!-- Lorem Ipsum Generator -->
+                <div class="tool-card" id="lorem-ipsum" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-paragraph"></i> Lorem Ipsum Generator</h3>
+                        <p>Generate placeholder text</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="paragraphCount">Number of Paragraphs</label>
+                            <input type="number" id="paragraphCount" min="1" max="50" value="3" class="tool-input">
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="startWithLorem" checked>
+                                <span class="checkbox-circle"></span>
+                                <span>Start with "Lorem ipsum"</span>
+                            </label>
+                        </div>
+                        <div class="button-group">
+                            <button id="generateLoremBtn"><i class="fas fa-sync"></i> Generate</button>
+                            <button id="copyLoremBtn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <div id="loremOutput" class="output-box"></div>
+                    </div>
+                </div>
+
+                <!-- Regex Tester -->
+                <div class="tool-card" id="regex-tester" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-search"></i> Regex Tester</h3>
+                        <p>Test and validate regular expressions</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="input-group">
+                            <label for="regexPattern">Regular Expression</label>
+                            <input type="text" id="regexPattern" placeholder="Enter regex pattern..." class="tool-input">
+                        </div>
+                        <div class="input-group">
+                            <label for="regexTest">Test String</label>
+                            <textarea id="regexTest" placeholder="Enter text to test..." class="tool-textarea"></textarea>
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="globalMatch">
+                                <span class="checkbox-circle"></span>
+                                <span>Global Match</span>
+                            </label>
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="caseInsensitive">
+                                <span class="checkbox-circle"></span>
+                                <span>Case Insensitive</span>
+                            </label>
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="multiline">
+                                <span class="checkbox-circle"></span>
+                                <span>Multiline</span>
+                            </label>
+                        </div>
+                        <button id="testRegexBtn"><i class="fas fa-check"></i> Test Regex</button>
+                        <div id="regexResults" class="output-box"></div>
+                    </div>
+                </div>
+
+                <!-- URL Encoder -->
+                <div class="tool-card" id="url-encoder" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-link"></i> URL Encoder/Decoder</h3>
+                        <p>Encode or decode URLs</p>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="urlInput" placeholder="Enter URL to encode/decode..." class="tool-textarea"></textarea>
+                        <div class="button-group">
+                            <button id="encodeUrlBtn"><i class="fas fa-lock"></i> Encode</button>
+                            <button id="decodeUrlBtn"><i class="fas fa-unlock"></i> Decode</button>
+                            <button id="copyUrlBtn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <div id="urlOutput" class="output-box"></div>
+                    </div>
+                </div>
+
+                <!-- Base64 Converter -->
+                <div class="tool-card" id="base64-converter" style="display: none;">
+                    <div class="tool-header">
+                        <h3><i class="fas fa-exchange-alt"></i> Base64 Converter</h3>
+                        <p>Convert text to and from Base64</p>
+                    </div>
+                    <div class="tool-content">
+                        <textarea id="base64Input" placeholder="Enter text to convert..." class="tool-textarea"></textarea>
+                        <div class="button-group">
+                            <button id="encodeBase64Btn"><i class="fas fa-arrow-right"></i> Encode</button>
+                            <button id="decodeBase64Btn"><i class="fas fa-arrow-left"></i> Decode</button>
+                            <button id="copyBase64Btn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <div id="base64Output" class="output-box"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for free online tools and utilities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="pages/image-tools.html">Image Tools</a>
+                <a href="pages/color-tools.html">Color Tools</a>
+                <a href="pages/math-tools.html">Math Tools</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>Found a bug? Have a suggestion?</p>
+                <a href="mailto:rahimullahebrahimkhail564700@gmail.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 allFreeTools. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Add CryptoJS library for hash functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/dev-tools.js"></script>
+    <script>
+        // Quick Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickNavLinks = document.querySelectorAll('.quick-nav-links a');
+            const toolCards = document.querySelectorAll('.tool-card');
+
+            // Function to show a specific tool card
+            function showToolCard(cardId) {
+                toolCards.forEach(card => {
+                    if (card.id === cardId) {
+                        card.classList.add('active');
+                        // Scroll to the card with smooth behavior
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+            }
+
+            // Show the first tool card by default
+            showToolCard('json-formatter');
+
+            // Handle quick navigation clicks
+            quickNavLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    quickNavLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Get target tool card ID
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // Show the target tool card
+                    showToolCard(targetId);
+                });
+            });
+
+            // Handle hash navigation on page load
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                const targetLink = document.querySelector(`.quick-nav-links a[href="#${targetId}"]`);
+                if (targetLink) {
+                    targetLink.click();
+                }
+            }
+        });
+
+        // UUID Generator
+        document.getElementById('generateUuidBtn').addEventListener('click', function() {
+            const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            document.getElementById('uuidOutput').textContent = uuid;
+        });
+
+        document.getElementById('copyUuidBtn').addEventListener('click', function() {
+            const uuid = document.getElementById('uuidOutput').textContent;
+            if (uuid) {
+                navigator.clipboard.writeText(uuid);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }
+        });
+
+        // Hash Generator
+        document.getElementById('generateHashBtn').addEventListener('click', function() {
+            const input = document.getElementById('hashInput').value;
+            if (!input) return;
+
+            const md5 = CryptoJS.MD5(input).toString();
+            const sha1 = CryptoJS.SHA1(input).toString();
+            const sha256 = CryptoJS.SHA256(input).toString();
+
+            const results = document.getElementById('hashResults');
+            results.innerHTML = `
+                <div class="hash-result">
+                    <span class="hash-label">MD5:</span>
+                    <span class="hash-value">${md5}</span>
+                </div>
+                <div class="hash-result">
+                    <span class="hash-label">SHA-1:</span>
+                    <span class="hash-value">${sha1}</span>
+                </div>
+                <div class="hash-result">
+                    <span class="hash-label">SHA-256:</span>
+                    <span class="hash-value">${sha256}</span>
+                </div>
+            `;
+        });
+
+        document.getElementById('copyHashBtn').addEventListener('click', function() {
+            const results = document.getElementById('hashResults').innerText;
+            if (results) {
+                navigator.clipboard.writeText(results);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy All';
+                }, 2000);
+            }
+        });
+
+        // Timestamp Converter
+        document.getElementById('convertTimestampBtn').addEventListener('click', function() {
+            const input = document.getElementById('timestampInput').value;
+            if (!input) return;
+
+            let timestamp, date;
+            if (/^\d+$/.test(input)) {
+                // Input is a timestamp
+                timestamp = parseInt(input);
+                date = new Date(timestamp * 1000);
+            } else {
+                // Input is a date string
+                date = new Date(input);
+                timestamp = Math.floor(date.getTime() / 1000);
+            }
+
+            const results = document.getElementById('timestampResults');
+            results.innerHTML = `
+                <div class="timestamp-result">
+                    <span class="timestamp-label">Unix Timestamp:</span>
+                    <span class="timestamp-value">${timestamp}</span>
+                </div>
+                <div class="timestamp-result">
+                    <span class="timestamp-label">UTC:</span>
+                    <span class="timestamp-value">${date.toUTCString()}</span>
+                </div>
+                <div class="timestamp-result">
+                    <span class="timestamp-label">Local Time:</span>
+                    <span class="timestamp-value">${date.toString()}</span>
+                </div>
+            `;
+        });
+
+        document.getElementById('copyTimestampBtn').addEventListener('click', function() {
+            const results = document.getElementById('timestampResults').innerText;
+            if (results) {
+                navigator.clipboard.writeText(results);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy All';
+                }, 2000);
+            }
+        });
+
+        // Lorem Ipsum Generator
+        document.getElementById('generateLoremBtn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('paragraphCount').value) || 3;
+            const startWithLorem = document.getElementById('startWithLorem').checked;
+            
+            let text = '';
+            for (let i = 0; i < count; i++) {
+                if (i === 0 && startWithLorem) {
+                    text += 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ';
+                }
+                text += 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n';
+            }
+            
+            document.getElementById('loremOutput').textContent = text.trim();
+        });
+
+        document.getElementById('copyLoremBtn').addEventListener('click', function() {
+            const text = document.getElementById('loremOutput').textContent;
+            if (text) {
+                navigator.clipboard.writeText(text);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }
+        });
+
+        // Regex Tester
+        document.getElementById('testRegexBtn').addEventListener('click', function() {
+            const pattern = document.getElementById('regexPattern').value;
+            const testString = document.getElementById('regexTest').value;
+            const globalMatch = document.getElementById('globalMatch').checked;
+            const caseInsensitive = document.getElementById('caseInsensitive').checked;
+            const multiline = document.getElementById('multiline').checked;
+
+            if (!pattern || !testString) return;
+
+            try {
+                let flags = '';
+                if (globalMatch) flags += 'g';
+                if (caseInsensitive) flags += 'i';
+                if (multiline) flags += 'm';
+
+                const regex = new RegExp(pattern, flags);
+                const matches = testString.match(regex);
+                const results = document.getElementById('regexResults');
+
+                if (matches) {
+                    results.innerHTML = `
+                        <div class="regex-match">
+                            <span class="match-label">Matches found:</span>
+                            <span class="match-count">${matches.length}</span>
+                        </div>
+                        <div class="regex-matches">
+                            ${matches.map((match, index) => `
+                                <div class="match-item">
+                                    <span class="match-index">${index + 1}:</span>
+                                    <span class="match-text">${match}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML = '<div class="regex-no-match">No matches found</div>';
+                }
+            } catch (e) {
+                document.getElementById('regexResults').innerHTML = `
+                    <div class="regex-error">Invalid regular expression: ${e.message}</div>
+                `;
+            }
+        });
+
+        // URL Encoder/Decoder
+        document.getElementById('encodeUrlBtn').addEventListener('click', function() {
+            const input = document.getElementById('urlInput').value;
+            document.getElementById('urlOutput').textContent = encodeURIComponent(input);
+        });
+
+        document.getElementById('decodeUrlBtn').addEventListener('click', function() {
+            const input = document.getElementById('urlInput').value;
+            try {
+                document.getElementById('urlOutput').textContent = decodeURIComponent(input);
+            } catch (e) {
+                document.getElementById('urlOutput').textContent = 'Invalid URL encoding';
+            }
+        });
+
+        document.getElementById('copyUrlBtn').addEventListener('click', function() {
+            const output = document.getElementById('urlOutput').textContent;
+            if (output) {
+                navigator.clipboard.writeText(output);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }
+        });
+
+        // Base64 Converter
+        document.getElementById('encodeBase64Btn').addEventListener('click', function() {
+            const input = document.getElementById('base64Input').value;
+            document.getElementById('base64Output').textContent = btoa(input);
+        });
+
+        document.getElementById('decodeBase64Btn').addEventListener('click', function() {
+            const input = document.getElementById('base64Input').value;
+            try {
+                document.getElementById('base64Output').textContent = atob(input);
+            } catch (e) {
+                document.getElementById('base64Output').textContent = 'Invalid Base64 encoding';
+            }
+        });
+
+        document.getElementById('copyBase64Btn').addEventListener('click', function() {
+            const output = document.getElementById('base64Output').textContent;
+            if (output) {
+                navigator.clipboard.writeText(output);
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html> 

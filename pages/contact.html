@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../js/main.js"></script>
+    <style>
+        /* Dark mode styles */
+        :root {
+            --bg-color: #3a3a3a;
+            --card-bg: #454545;
+            --text-color: #ffffff;
+            --border-color: #666666;
+            --primary-color: #4a90e2;
+            --primary-color-rgb: 74, 144, 226;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --hover-color: #555555;
+            --header-bg: #3a3a3a;
+            --nav-hover: #555555;
+            --card-bg-hover: #555555;
+            --input-bg: #4a4a4a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Header Styles */
+        .header {
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #ffffff !important;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #ffffff !important;
+            opacity: 0.9;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff !important;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: var(--header-bg);
+            padding: 0;
+            z-index: 999;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        
+        .mobile-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #ffffff !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-nav a:last-child {
+            border-bottom: none;
+        }
+        
+        .mobile-nav a:hover,
+        .mobile-nav a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            padding-left: 2.2rem;
+        }
+        
+        .mobile-nav.active {
+            display: block;
+            max-height: 500px; /* Adjust based on content */
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 4px;
+                transition: background 0.3s ease;
+            }
+            
+            .mobile-menu-toggle:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .contact-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+        
+        .contact-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-header p {
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .contact-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .contact-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-card {
+            background: #2a2a3a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 0.75rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex: 1 1 calc(50% - 1.5rem);
+            min-width: 250px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .contact-card::before,
+        .contact-card::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(45deg, #4CAF50, #2196F3, #9C27B0, #FFC107, #FF5722);
+            background-size: 400% 400%;
+            width: 100%;
+            height: 3px;
+            left: 0;
+            z-index: 1;
+            animation: borderGradient 8s ease infinite;
+        }
+        
+        .contact-card::before {
+            top: 0;
+        }
+        
+        .contact-card::after {
+            bottom: 0;
+        }
+        
+        .contact-card:hover::before,
+        .contact-card:hover::after {
+            animation: borderGradient 3s ease infinite, borderExpand 0.8s ease forwards;
+        }
+        
+        .contact-card .border-left,
+        .contact-card .border-right {
+            position: absolute;
+            width: 3px;
+            height: 0;
+            background: linear-gradient(45deg, #4CAF50, #2196F3, #9C27B0, #FFC107, #FF5722);
+            background-size: 400% 400%;
+            transition: height 0.3s ease 0.4s;
+            z-index: 1;
+        }
+        
+        .contact-card .border-left {
+            left: 0;
+            top: 0;
+        }
+        
+        .contact-card .border-right {
+            right: 0;
+            bottom: 0;
+        }
+        
+        .contact-card:hover .border-left,
+        .contact-card:hover .border-right {
+            height: 100%;
+        }
+        
+        @keyframes borderGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes borderExpand {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        
+        .contact-card .card-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .contact-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .contact-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .contact-card p, .contact-card a {
+            color: #b0b0b0;
+            margin: 0.5rem 0;
+            display: block;
+            text-decoration: none;
+        }
+
+        .contact-card a:hover {
+            color: var(--primary-color);
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 2rem;
+            border-radius: 50%;
+            padding: 10px;
+            background: linear-gradient(45deg, #4CAF50, #2196F3, #9C27B0, #FFC107, #FF5722);
+            background-size: 400% 400%;
+            animation: borderGradient 8s ease infinite;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--card-bg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-image-container::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: inherit;
+            background-size: 400% 400%;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.7;
+            animation: borderGradient 8s ease infinite reverse;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e2e;
+            --text-color: #e6e6e6;
+            --border-color: #3a3a4a;
+            --primary-color: #4cc9f0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        body.dark-mode .contact-card {
+            background: #2a2a3a;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .contact-container {
+            background: #1a1a2a;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-mode .footer {
+            background: #0f0f1a;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .footer-section h3 {
+            color: #f8f9fa;
+        }
+        
+        body.dark-mode .footer-bottom {
+            background: #0a0a12;
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .contact-card h3,
+        body.dark-mode .contact-card .card-content h3 {
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .contact-card p,
+        body.dark-mode .contact-card .card-content p {
+            color: #dee2e6;
+        }
+
+        body.dark-mode .page-header h1,
+        body.dark-mode .page-header p {
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .profile-image {
+            border-color: #2a2a3a;
+        }
+        
+        /* Header Dark Mode Styles */
+        body.dark-mode header {
+            background-color: #1a1a2a;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .logo h1 {
+            color: #f8f9fa;
+        }
+        
+        body.dark-mode .nav-links a {
+            color: #e6e6e6;
+        }
+        
+        body.dark-mode .nav-links a:hover,
+        body.dark-mode .nav-links a.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        body.dark-mode .hamburger span {
+            background-color: #e6e6e6;
+        }
+        
+        body.dark-mode .quick-nav {
+            background: #2a2a3a;
+            border: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .quick-nav h2 {
+            color: #f8f9fa;
+        }
+        
+        body.dark-mode .quick-nav-links a {
+            background: #1e1e2e;
+            color: #e6e6e6;
+            border: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .contact-content {
+                flex-direction: column;
+            }
+            
+            .contact-info {
+                width: 100%;
+            }
+        }
+
+        .ontact-card{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="math-tools.html">Math Tools</a>
+                <a href="contact.html" class="active">Contact Us</a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="contact-container">
+            <div class="contact-header">
+                <h1>Contact Us</h1>
+                <p>Get in touch with us for any inquiries or support</p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <!-- Profile Image with Animated Border -->
+                <div style="display: block;" class="profile-image-container">
+                    <img src="../rahimullah-removebg-preview.png" alt="Rahimullah Ebrahimkhail" class="profile-image" id="profileImage">
+                </div>
+                    
+                    <div style="max-width: 300px; display: inline-block;" class="contact-card">
+                        <div class="border-left"></div>
+                        <div class="border-right"></div>
+                        <div class="card-content">
+                            <i class="fas fa-user" style="color: #4CAF50; font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                            <h3 style="margin: 0.5rem 0; color: var(--text-color);">Rahimullah Ebrahimkhail</h3>
+                            <p style="margin: 0; color: #b0b0b0;">Web & Android Developer</p>
+                        </div>
+                    </div>
+                    
+                    <div style=" display: inline-block;" class="contact-card">
+                        <div class="border-left"></div>
+                        <div class="border-right"></div>
+                        <div class="card-content">
+                            <i class="fas fa-envelope" style="color: #2196F3; font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                            <h3 style="margin: 0.5rem 0; color: var(--text-color);">Email</h3>
+                            <a href="mailto:rahimullahebrahimkhail564700@gmail.com" style="color: #2196F3; text-decoration: none; word-break: break-word;">
+                                rahimullahebrahimkhail564700@gmail.com
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style=" display: inline-block;" class="contact-card">
+                        <div class="border-left"></div>
+                        <div class="border-right"></div>
+                        <div class="card-content">
+                            <i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                            <h3 style="margin: 0.5rem 0; color: var(--text-color);">WhatsApp</h3>
+                            <a href="https://wa.me/+93775621991" target="_blank" style="color: #25D366; text-decoration: none;">
+                                +93 775 621 991
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style="display: inline-block;" class="contact-card">
+                        <div class="border-left"></div>
+                        <div class="border-right"></div>
+                        <div class="card-content">
+                            <i class="fas fa-phone" style="color: #9C27B0; font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                            <h3 style="margin: 0.5rem 0; color: var(--text-color);">Phone</h3>
+                            <a href="tel:+93775621991" style="color: #9C27B0; text-decoration: none;">
+                                +93 775 621 991
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style=" display: inline-block;" class="contact-info">
+                    <div class="contact-card">
+                        <div class="border-left"></div>
+                        <div class="border-right"></div>
+                        <div class="card-content">
+                            <i class="fas fa-map-marker-alt" style="color: #FF5722; font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                            <h3 style="margin: 0.5rem 0; color: var(--text-color);">Location</h3>
+                            <p style="margin: 0; color: #b0b0b0;">Kabul, Afghanistan</p>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="contact-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Working Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p>Saturday: 10:00 AM - 4:00 PM</p>
+                        <p>Sunday: Closed</p>
+                    </div> -->
+                    
+                    <!-- <div class="contact-card">
+                        <i class="fas fa-share-alt"></i>
+                        <h3>Connect With Me</h3>
+                        <div class="social-links">
+                            <a href="#" target="_blank"><i class="fab fa-github"></i> GitHub</a><br>
+                            <a href="#" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a><br>
+                            <a href="#" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <!-- <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for all online tools and calculators. Making complex calculations simple and accessible to everyone.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="math-tools.html">Math Tools</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-envelope"></i> rahimullahebrahimkhail564700@gmail.com</p>
+                <p><i class="fas fa-phone"></i> +93775621991</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ToolsHub. All rights reserved.</p>
+        </div>
+    </footer> -->
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const mobileNav = document.querySelector('.mobile-nav');
+            
+            // Create mobile nav if it doesn't exist
+            if (!mobileNav && navLinks) {
+                const mobileNav = document.createElement('div');
+                mobileNav.className = 'mobile-nav';
+                
+                // Clone all nav links
+                const links = Array.from(navLinks.children);
+                links.forEach(link => {
+                    const mobileLink = link.cloneNode(true);
+                    mobileNav.appendChild(mobileLink);
+                });
+                
+                document.querySelector('.navbar').appendChild(mobileNav);
+            }
+            
+            // Toggle mobile menu
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    const mobileNav = document.querySelector('.mobile-nav');
+                    if (mobileNav) {
+                        mobileNav.classList.toggle('active');
+                        this.querySelector('i').className = 
+                            mobileNav.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+                    }
+                });
+            }
+        });
+
+        // Update current year in footer
+        const footerYear = document.querySelector('.footer-bottom p');
+        if (footerYear) {
+            footerYear.textContent = `&copy; ${new Date().getFullYear()} allFreeTools. All rights reserved.`;
+        }
+
+        // Add animation to profile image container on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileContainer = document.querySelector('.profile-image-container');
+            if (profileContainer) {
+                // Small delay to ensure the animation is visible
+                setTimeout(() => {
+                    profileContainer.style.animation = 'borderGradient 8s ease infinite';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
