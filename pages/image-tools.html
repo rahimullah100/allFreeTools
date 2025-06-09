@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Tools - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Tool Card Styles */
+        .tool-card {
+            display: none;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tool-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Quick Navigation Styles */
+        .quick-nav {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: white;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .quick-nav-links a i {
+            margin-right: 0.5rem;
+        }
+
+        /* Image Tool Specific Styles */
+        .image-preview {
+            max-width: 100%;
+            max-height: 600px;
+            margin: 1rem 0;
+            border-radius: 8px;
+            display: none;
+            object-fit: contain;
+            background: #f5f5f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-preview.active {
+            display: block;
+        }
+
+        .tool-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+
+        .preview-container {
+            width: 100%;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .image-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .image-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .image-control-group label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .image-control-group input[type="range"] {
+            width: 100%;
+        }
+
+        .image-control-group input[type="number"] {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .image-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .image-buttons button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .image-buttons button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .image-buttons button:active {
+            transform: translateY(0);
+        }
+
+        .image-buttons button i {
+            font-size: 1.1rem;
+        }
+
+        .cropper-container {
+            max-height: 600px;
+            margin: 1rem 0;
+        }
+
+        #cropContainer {
+            width: 100%;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .canvas-container {
+            position: relative;
+            margin: 1rem 0;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        #drawingCanvas {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-width: 100%;
+            max-height: 600px;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .drawing-tools button {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drawing-tools button:hover {
+            background: var(--hover-color);
+        }
+
+        .drawing-tools button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .brush-size {
+            width: 100px;
+        }
+
+        /* Add these styles in the existing style section */
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background: var(--hover-color);
+        }
+
+        .file-input-label i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .file-input-label span {
+            text-align: center;
+        }
+
+        /*my new Style*/
+        /* Quick Navigation */
+        .quick-nav {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        input{
+            color: black  !important;
+
+        }
+
+        option{
+            color: black;
+        }
+
+        textarea{
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <!-- <a href="file-conversion.html">File Conversion</a> -->
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html" class="active">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="math-tools.html">Math Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Image & Photo Tools</h1>
+            <p>Transform and enhance your images with our powerful suite of image editing tools. Resize, crop, rotate, and apply various effects to your images with ease.</p>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <h3 style="color: green !important; margin-bottom: 15px;"> Please choose an option ==></h3>
+            <div class="quick-nav-links">
+                <a href="#resize-image" class="active"><i class="fas fa-expand"></i> Resize Image</a>
+                <a href="#crop-image"><i class="fas fa-crop"></i> Crop Image</a>
+                <a href="#rotate-image"><i class="fas fa-sync"></i> Rotate Image</a>
+                <a href="#flip-image"><i class="fas fa-mirror"></i> Flip Image</a>
+                <a href="#compress-image"><i class="fas fa-compress"></i> Compress Image</a>
+                <a href="#draw-image"><i class="fas fa-pen"></i> Draw on Image</a>
+                <a href="#blur-sharpen"><i class="fas fa-blur"></i> Blur/Sharpen</a>
+                <a href="#adjust-image"><i class="fas fa-sliders"></i> Adjust Image</a>
+                <a href="#color-filters"><i class="fas fa-palette"></i> Color Filters</a>
+            </div>
+        </section>
+
+        <!-- Tool Cards -->
+        <div class="tool-card active" id="resize-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-expand"></i> Resize Image</h3>
+                <p>Resize your image while maintaining aspect ratio</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="resizeInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="resizeInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="resizePreview" class="image-preview">
+                <div class="image-controls">
+                    <div class="image-control-group">
+                        <label style="color: black;" for="resizeWidth">Width (px)</label>
+                        <input style="color: black;" type="number" id="resizeWidth" min="1" value="800">
+                    </div>
+                    <div class="image-control-group">
+                        <label style="color: black;" for="resizeHeight">Height (px)</label>
+                        <input style="color: black;" type="number" id="resizeHeight" min="1" value="600">
+                    </div>
+                    <div class="image-control-group">
+                        <label style="color: black;" for="maintainAspect">Maintain Aspect Ratio</label>
+                        <input style="color: black;" type="checkbox" id="maintainAspect" checked>
+                    </div>
+                </div>
+                <div class="image-buttons">
+                    <button id="resizeBtn"><i class="fas fa-expand"></i> Resize</button>
+                    <button id="downloadResizeBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="crop-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-crop"></i> Crop Image</h3>
+                <p>Crop your image to the desired dimensions</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="cropInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="cropInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <div id="cropContainer" style="display: none;">
+                    <img id="cropPreview" class="image-preview">
+                </div>
+                <div class="image-buttons">
+                    <button id="cropBtn" disabled><i class="fas fa-crop"></i> Crop</button>
+                    <button id="downloadCropBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="rotate-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-sync"></i> Rotate Image</h3>
+                <p>Rotate your image by any angle</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="rotateInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="rotateInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="rotatePreview" class="image-preview">
+                <div class="image-controls">
+                    <div class="image-control-group">
+                        <label style="color: black;" for="rotateAngle">Rotation Angle (degrees)</label>
+                        <input style="color: black;" type="range" id="rotateAngle" min="0" max="360" value="0">
+                        <input style="color: black;" type="number" id="rotateAngleValue" value="0" min="0" max="360">
+                    </div>
+                </div>
+                <div class="image-buttons">
+                    <button id="rotateLeftBtn"><i class="fas fa-undo"></i> Rotate Left</button>
+                    <button id="rotateRightBtn"><i class="fas fa-redo"></i> Rotate Right</button>
+                    <button id="downloadRotateBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="flip-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-mirror"></i> Flip Image</h3>
+                <p>Flip your image horizontally or vertically</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="flipInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="flipInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="flipPreview" class="image-preview">
+                <div class="image-buttons">
+                    <button id="flipHorizontalBtn"><i class="fas fa-arrows-alt-h"></i> Flip Horizontal</button>
+                    <button id="flipVerticalBtn"><i class="fas fa-arrows-alt-v"></i> Flip Vertical</button>
+                    <button id="downloadFlipBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="compress-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-compress"></i> Compress Image</h3>
+                <p>Compress your image while maintaining quality</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="compressInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="compressInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="compressPreview" class="image-preview">
+                <div class="image-controls">
+                    <div class="image-control-group">
+                        <label>Original Size:</label>
+                        <span id="originalSize">-</span>
+                    </div>
+                    <div class="image-control-group">
+                        <label>Compressed Size:</label>
+                        <span id="compressedSize">-</span>
+                    </div>
+                </div>
+                <div class="image-buttons">
+                    <button id="compressBtn"><i class="fas fa-compress"></i> Compress</button>
+                    <button id="downloadCompressBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="draw-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-pen"></i> Draw on Image</h3>
+                <p>Add annotations and drawings to your image</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="drawInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="drawInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="drawingCanvas"></canvas>
+                </div>
+                <div class="drawing-tools">
+                    <button id="penTool" class="active"><i class="fas fa-pen"></i> Pen</button>
+                    <button id="eraserTool"><i class="fas fa-eraser"></i> Eraser</button>
+                    <input style="color: black;" type="color" id="drawColor" class="color-picker" value="#000000">
+                    <input style="color: black;" type="range" id="brushSize" class="brush-size" min="1" max="50" value="5">
+                    <button id="clearCanvas"><i class="fas fa-trash"></i> Clear</button>
+                </div>
+                <div class="image-buttons">
+                    <button id="downloadDrawBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="blur-sharpen">
+            <div class="tool-header">
+                <h3><i class="fas fa-blur"></i> Blur/Sharpen</h3>
+                <p>Adjust image blur and sharpness</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="blurInput" accept="image/*" class="file-input">
+                    <label style="color: black;"  for="blurInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="blurPreview" class="image-preview">
+                <div class="image-controls">
+                    <div class="image-control-group">
+                        <label for="blurAmount">Blur Amount</label>
+                        <input style="color: black;" type="range" id="blurAmount" min="0" max="10" value="0" step="0.1">
+                        <input style="color: black;" type="number" id="blurAmountValue" value="0" min="0" max="10" step="0.1">
+                    </div>
+                    <div class="image-control-group">
+                        <label for="sharpenAmount">Sharpen Amount</label>
+                        <input style="color: black;" type="range" id="sharpenAmount" min="0" max="10" value="0" step="0.1">
+                        <input style="color: black;" type="number" id="sharpenAmountValue" value="0" min="0" max="10" step="0.1">
+                    </div>
+                </div>
+                <div class="image-buttons">
+                    <button id="applyBlurBtn"><i class="fas fa-check"></i> Apply</button>
+                    <button id="downloadBlurBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="adjust-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-sliders"></i> Adjust Image</h3>
+                <p>Adjust brightness, contrast, and saturation</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="adjustInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="adjustInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="adjustPreview" class="image-preview">
+                <div class="image-controls">
+                    <div class="image-control-group">
+                        <label for="brightness">Brightness</label>
+                        <input style="color: black;" type="range" id="brightness" min="-100" max="100" value="0">
+                        <input style="color: black;" type="number" id="brightnessValue" value="0" min="-100" max="100">
+                    </div>
+                    <div class="image-control-group">
+                        <label for="contrast">Contrast</label>
+                        <input style="color: black;" type="range" id="contrast" min="-100" max="100" value="0">
+                        <input style="color: black;" type="number" id="contrastValue" value="0" min="-100" max="100">
+                    </div>
+                    <div class="image-control-group">
+                        <label for="saturation">Saturation</label>
+                        <input style="color: black;" type="range" id="saturation" min="-100" max="100" value="0">
+                        <input style="color: black;" type="number" id="saturationValue" value="0" min="-100" max="100">
+                    </div>
+                </div>
+                <div class="image-buttons">
+                    <button id="applyAdjustBtn"><i class="fas fa-check"></i> Apply</button>
+                    <button id="downloadAdjustBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-card" id="color-filters">
+            <div class="tool-header">
+                <h3><i class="fas fa-palette"></i> Color Filters</h3>
+                <p>Apply various color filters to your image</p>
+            </div>
+            <div class="tool-content">
+                <div class="file-input-container">
+                    <input style="color: black;" type="file" id="filterInput" accept="image/*" class="file-input">
+                    <label style="color: black;" for="filterInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </div>
+                <img id="filterPreview" class="image-preview">
+                <div class="image-buttons">
+                    <button id="grayscaleBtn"><i class="fas fa-adjust"></i> Grayscale</button>
+                    <button id="sepiaBtn"><i class="fas fa-sun"></i> Sepia</button>
+                    <button id="invertBtn"><i class="fas fa-sync"></i> Invert</button>
+                    <button id="downloadFilterBtn" disabled><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for free online tools and utilities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="pages/image-tools.html">Image Tools</a>
+                <a href="pages/color-tools.html">Color Tools</a>
+                <a href="pages/math-tools.html">Math Tools</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>Found a bug? Have a suggestion?</p>
+                <a href="mailto:support@toolshub.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 allFreeTools. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/image-tools.js"></script>
+</body>
+</html> 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- English Sitemap -->
+    <sitemap>
+        <loc>https://allfreetools.com/sitemap.xml</loc>
+        <lastmod>2025-06-08</lastmod>
+    </sitemap>
+    
+    <!-- Persian (Farsi) Sitemap -->
+    <sitemap>
+        <loc>https://allfreetools.com/sitemap-fa.xml</loc>
+        <lastmod>2025-06-08</lastmod>
+    </sitemap>
+    
+    <!-- Tools Sitemaps -->
+    <sitemap>
+        <loc>https://allfreetools.com/sitemap-text-tools.xml</loc>
+        <lastmod>2025-06-08</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://allfreetools.com/sitemap-image-tools.xml</loc>
+        <lastmod>2025-06-08</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://allfreetools.com/sitemap-dev-tools.xml</loc>
+        <lastmod>2025-06-08</lastmod>
+    </sitemap>
+</sitemapindex>

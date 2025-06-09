@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Tools - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Tool Card Styles */
+        .tool-card {
+            display: block;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0.5;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Quick Navigation */
+        .quick-nav {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: white;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .quick-nav-links a i {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .quick-nav-links {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* my new Stle*/
+
+        /* Quick Navigation */
+        .quick-nav {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        textarea{
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <!-- <a href="file-conversion.html">File Conversion</a> -->
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html" class="active">Color Tools</a>
+                <a href="math-tools.html">Math Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Color & Design Tools</h1>
+            <p>Create beautiful color schemes and design elements</p>
+        </section>
+
+        <section class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <h3 style="color: green !important; margin-bottom: 15px;"> Please choose an option ==></h3>
+            <div class="quick-nav-links">
+                <a href="#color-picker" class="active">
+                    <i class="fas fa-eye-dropper"></i>
+                    Color Picker
+                </a>
+                <a href="#color-palette">
+                    <i class="fas fa-palette"></i>
+                    Color Palette
+                </a>
+                <a href="#gradient-generator">
+                    <i class="fas fa-gradient"></i>
+                    Gradient Generator
+                </a>
+                <a href="#color-converter">
+                    <i class="fas fa-exchange-alt"></i>
+                    Color Converter
+                </a>
+                <a href="#image-color-picker">
+                    <i class="fas fa-image"></i>
+                    Image Color Picker
+                </a>
+            </div>
+        </section>
+
+        <section class="tools-section">
+            <div class="tools-grid">
+                <!-- Color Picker Tool -->
+                <div class="tool-card" id="color-picker" style="display: block;">
+                    <div class="tool-header">
+                        <h2>Color Picker</h2>
+                        <p>Pick colors from anywhere on your screen</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="color-picker-container">
+                            <input type="color" id="colorPicker" value="#ff0000">
+                            <div class="color-info">
+                                <div class="color-value">
+                                    <span>HEX:</span>
+                                    <input type="text" id="hexValue" value="#ff0000" readonly>
+                                </div>
+                                <div class="color-value">
+                                    <span>RGB:</span>
+                                    <input type="text" id="rgbValue" value="rgb(255, 0, 0)" readonly>
+                                </div>
+                                <div class="color-value">
+                                    <span>HSL:</span>
+                                    <input type="text" id="hslValue" value="hsl(0, 100%, 50%)" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Color Palette Generator -->
+                <div class="tool-card" id="color-palette" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Color Palette Generator</h2>
+                        <p>Generate beautiful color palettes</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="palette-controls">
+                            <div class="color-inputs">
+                                <input type="color" id="baseColor" value="#4a90e2">
+                            </div>
+                            <div class="palette-options">
+                                <select id="paletteType" class="select-input">
+                                    <option value="analogous">Analogous</option>
+                                    <option value="complementary">Complementary</option>
+                                    <option value="triadic">Triadic</option>
+                                    <option value="split-complementary">Split Complementary</option>
+                                </select>
+                                <button id="generatePalette" class="btn">
+                                    <i class="fas fa-sync-alt"></i> Generate Palette
+                                </button>
+                            </div>
+                        </div>
+                        <div class="palette-preview" id="palettePreview">
+                            <!-- Palette colors will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gradient Generator -->
+                <div class="tool-card" id="gradient-generator" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Gradient Generator</h2>
+                        <p>Create beautiful gradients</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="gradient-controls">
+                            <div class="color-inputs">
+                                <input type="color" id="gradientColor1" value="#ff0000">
+                                <input type="color" id="gradientColor2" value="#0000ff">
+                            </div>
+                            <select id="gradientType" class="select-input">
+                                <option value="linear">Linear</option>
+                                <option value="radial">Radial</option>
+                            </select>
+                            <input type="range" id="gradientAngle" min="0" max="360" value="90">
+                        </div>
+                        <div class="gradient-preview" id="gradientPreview"></div>
+                        <div class="gradient-code">
+                            <input type="text" id="gradientCode" readonly>
+                            <button class="btn" id="copyGradient">Copy CSS</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Color Converter -->
+                <div class="tool-card" id="color-converter" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Color Converter</h2>
+                        <p>Convert between color formats</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="converter-input">
+                            <input type="text" id="colorInput" placeholder="Enter color (HEX, RGB, or HSL)">
+                            <button class="btn" id="convertColor">Convert</button>
+                        </div>
+                        <div class="conversion-results">
+                            <div class="color-value">
+                                <span>HEX:</span>
+                                <input type="text" id="convertedHex" readonly>
+                            </div>
+                            <div class="color-value">
+                                <span>RGB:</span>
+                                <input type="text" id="convertedRgb" readonly>
+                            </div>
+                            <div class="color-value">
+                                <span>HSL:</span>
+                                <input type="text" id="convertedHsl" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Color Picker -->
+                <div class="tool-card" id="image-color-picker" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Image Color Picker</h2>
+                        <p>Pick colors from any image</p>
+                    </div>
+                    <div class="tool-content">
+                        <div class="image-upload-container">
+                            <input type="file" id="imageInput" accept="image/*" class="file-input">
+                            <label for="imageInput" class="file-upload-label">
+                                <i class="fas fa-upload"></i>
+                                Choose Image
+                            </label>
+                            <div class="image-preview-container">
+                                <canvas id="imageCanvas"></canvas>
+                                <div id="colorPreview" class="color-preview"></div>
+                            </div>
+                            <div class="picked-colors">
+                                <div class="color-value">
+                                    <span>HEX:</span>
+                                    <input type="text" id="pickedHex" readonly>
+                                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                                </div>
+                                <div class="color-value">
+                                    <span>RGB:</span>
+                                    <input type="text" id="pickedRgb" readonly>
+                                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                                </div>
+                                <div class="color-value">
+                                    <span>HSL:</span>
+                                    <input type="text" id="pickedHsl" readonly>
+                                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div class="color-history" id="colorHistory">
+                                <!-- Color history will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About allFreeTools</h3>
+                <p>Your one-stop destination for free online tools and utilities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="pages/image-tools.html">Image Tools</a>
+                <a href="pages/color-tools.html">Color Tools</a>
+                <a href="pages/math-tools.html">Math Tools</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>Found a bug? Have a suggestion?</p>
+                <a href="mailto:support@toolshub.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 allFreeTools. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/color-tools.js"></script>
+    <script>
+        // Quick Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickNavLinks = document.querySelectorAll('.quick-nav-links a');
+            const toolCards = document.querySelectorAll('.tool-card');
+
+            // Function to show a specific tool card
+            function showToolCard(cardId) {
+                toolCards.forEach(card => {
+                    if (card.id === cardId) {
+                        card.classList.add('active');
+                        // Scroll to the card with smooth behavior
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+            }
+
+            // Show the first tool card by default
+            showToolCard('color-picker');
+
+            // Handle quick navigation clicks
+            quickNavLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    quickNavLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Get target tool card ID
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // Show the target tool card
+                    showToolCard(targetId);
+                });
+            });
+
+            // Handle hash navigation on page load
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                const targetLink = document.querySelector(`.quick-nav-links a[href="#${targetId}"]`);
+                if (targetLink) {
+                    targetLink.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

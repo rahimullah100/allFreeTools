@@ -1,0 +1,22 @@
+/* TEAM */
+    Developer: Rahimullah Ebrahimi
+    Site: https://allfreetools.com
+    Twitter: @allfreetools
+    Contact: rahimullahebrahimkhail564700@gmail.com
+    From: Kabul, Afghanistan
+
+/* THANKS */
+    Font Awesome: https://fontawesome.com
+    Google Fonts: https://fonts.google.com
+    Inter Font: https://rsms.me/inter/
+
+/* SITE */
+    Last updated: 2025
+    Standards: HTML5, CSS3, JavaScript (ES6+)
+    Components: Progressive Web App, Service Worker, Web Manifest
+    Software: Visual Studio Code, Git
+
+/* NOTE */
+    Made with ❤️ in Afghanistan
+    All tools are free to use
+    No tracking, no ads, no nonsense

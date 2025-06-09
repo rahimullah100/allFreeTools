@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="/mstile-70x70.png"/>
+            <square150x150logo src="/mstile-150x150.png"/>
+            <square310x310logo src="/mstile-310x310.png"/>
+            <wide310x150logo src="/mstile-310x150.png"/>
+            <TileColor>#4a90e2</TileColor>
+            <TileImage src="/mstile-144x144.png"/>
+        </tile>
+        <notification>
+            <polling-uri src="/live_tile"/>
+            <polling-uri2 src="/live_tile2"/>
+            <polling-uri3 src="/live_tile3"/>
+            <polling-uri4 src="/live_tile4"/>
+            <polling-uri5 src="/live_tile5"/>
+        </notification>
+        <favicon>
+            <url>/favicon.ico</url>
+        </favicon>
+        <tooltip>allFreeTools - Online Tools Collection</tooltip>
+    </msapplication>
+    <msapplication-tap-highlight>
+        <area shape="rect" coords="0,0,0,0" href="#" />
+    </msapplication-tap-highlight>
+</browserconfig>

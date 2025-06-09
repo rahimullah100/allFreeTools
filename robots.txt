@@ -1,0 +1,73 @@
+# robots.txt for allFreeTools
+# Last updated: 2025-06-08
+
+User-agent: *
+Allow: /
+
+# Sitemap locations
+Sitemap: https://allfreetools.com/sitemap-index.xml
+Sitemap: https://allfreetools.com/sitemap.xml
+Sitemap: https://allfreetools.com/sitemap-fa.xml
+
+# Disallow crawling of admin and private directories
+Disallow: /admin/
+Disallow: /private/
+Disallow: /includes/
+Disallow: /config/
+Disallow: /logs/
+Disallow: /backup/
+Disallow: /cgi-bin/
+Disallow: /node_modules/
+
+# Disallow query strings for tracking and sessions
+Disallow: /*?*
+Disallow: /*? 
+Disallow: /*& 
+Disallow: /*?ref= 
+Disallow: /*?utm_* 
+Disallow: /*?fbclid= 
+Disallow: /*?gclid= 
+Disallow: /*?msclkid= 
+
+# Allow specific query parameters for important pages
+Allow: /*?page=
+Allow: /*?id=
+Allow: /*?category=
+
+# Disallow common script files
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.php$
+
+# Allow specific script files
+Allow: /*.js?ver=
+Allow: /*.css?ver=
+
+# Crawl-delay for aggressive crawlers
+User-agent: bingbot
+Crawl-delay: 10
+
+User-agent: Yandex
+Crawl-delay: 5
+
+# Block specific bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Allow Google and Bing image bots
+User-agent: Googlebot-Image
+Allow: /images/
+
+User-agent: bingbot
+Allow: /images/
+
+# Allow webp images
+Allow: /*.webp$
+
+# Allow all other pages not explicitly disallowed

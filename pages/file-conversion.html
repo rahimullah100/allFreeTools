@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Conversion - allFreeTools</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Document Conversion Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xml2js/0.4.23/xml2js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set PDF.js worker path
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    
+    <style>
+        /* Tool Card Styles */
+        .tool-card {
+            display: none;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tool-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* File Upload Styles */
+        .file-upload {
+            width: 100%;
+            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background: var(--card-bg);
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .file-upload p {
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: var(--card-bg);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .file-info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: var(--input-bg);
+            border-radius: 4px;
+        }
+
+        .file-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-info-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-info-value {
+            color: var(--text-color);
+            font-weight: 500;
+            word-break: break-all;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .file-size {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Quick Navigation Styles */
+        .quick-nav {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav h2 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border-radius: 6px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: white;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .quick-nav-links a i {
+            margin-right: 0.5rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Conversion Status */
+        .conversion-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: var(--input-bg);
+            display: none;
+        }
+
+        .conversion-status.success {
+            background: #e6f4ea;
+            color: #1e7e34;
+            display: block;
+        }
+
+        .conversion-status.error {
+            background: #fbe9e7;
+            color: #d32f2f;
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        /* Button Grid Styles */
+        .conversion-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .conversion-option {
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .conversion-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .conversion-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .conversion-option i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Remove old select styles */
+        .input-group select {
+            display: none;
+        }
+
+        .input-group {
+            justify-content: center;
+        }
+
+        /* Page Title Styles */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        /* File Details Styles */
+        .file-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        .file-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .file-info-item {
+            padding: 0.5rem;
+            background: var(--input-bg);
+            border-radius: 4px;
+        }
+
+        .file-info-item span {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .file-info-item strong {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Loading Indicator Styles */
+        .loading-indicator {
+            display: none;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .file-upload.ready {
+            border-color: var(--primary-color);
+            background: var(--card-bg);
+        }
+
+        .file-upload.ready p {
+            color: var(--primary-color);
+        }
+
+        /* File Upload Loader */
+        .file-upload-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            z-index: 10;
+        }
+
+        .file-upload-loader.active {
+            display: flex;
+        }
+
+        .file-upload-loader .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .file-upload-loader .text {
+            margin-top: 1rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>allFreeTools</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="text-tools.html">Text Tools</a>
+                <!-- <a href="file-conversion.html" class="active">File Conversion</a> -->
+                <a href="dev-tools.html">Developer Tools</a>
+                <a href="image-tools.html">Image Tools</a>
+                <a href="color-tools.html">Color Tools</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">File Conversion Tools</h1>
+        
+        <!-- Quick Navigation -->
+        <div class="quick-nav">
+            <h2>Quick Navigation</h2>
+            <div class="quick-nav-links">
+                <a href="#docx-to-pdf" class="active"><i class="fas fa-file-word"></i> DOCX to PDF</a>
+                <a href="#pdf-to-docx"><i class="fas fa-file-pdf"></i> PDF to DOCX</a>
+                <a href="#image-to-pdf"><i class="fas fa-image"></i> Image to PDF</a>
+                <a href="#pdf-to-image"><i class="fas fa-file-image"></i> PDF to Image</a>
+            </div>
+        </div>
+
+        <!-- Tool Cards -->
+        <div class="tool-card active" id="docx-to-pdf">
+            <div class="tool-header">
+                <h3><i class="fas fa-file-word"></i> DOCX to PDF</h3>
+                <p>Convert your Word documents to PDF format</p>
+            </div>
+            <div class="tool-content">
+                <form id="docxToPdfForm" class="upload-form">
+                    <input type="file" id="docxInput" accept=".docx" class="file-input">
+                    <label for="docxInput" id="docxFileLabel" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </form>
+                <div class="status-message" id="docxStatus"></div>
+                <div class="loading" id="docxLoading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Converting...</p>
+                </div>
+                <div class="result" id="docxResult">
+                    <a href="#" id="docxDownloadLink" class="download-link">
+                        <i class="fas fa-download"></i>
+                        Download PDF
+                    </a>
+                </div>
+                <button id="convertDocxBtn" class="convert-btn" disabled>
+                    <i class="fas fa-exchange-alt"></i>
+                    Convert to PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="tool-card" id="pdf-to-docx">
+            <div class="tool-header">
+                <h3><i class="fas fa-file-pdf"></i> PDF to DOCX</h3>
+                <p>Convert your PDF files to Word documents</p>
+            </div>
+            <div class="tool-content">
+                <form id="pdfToDocxForm" class="upload-form">
+                    <input type="file" id="pdfInput" accept=".pdf" class="file-input">
+                    <label for="pdfInput" id="pdfFileLabel" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </form>
+                <div class="status-message" id="pdfStatus"></div>
+                <div class="loading" id="pdfLoading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Converting...</p>
+                </div>
+                <div class="result" id="pdfResult">
+                    <a href="#" id="pdfDownloadLink" class="download-link">
+                        <i class="fas fa-download"></i>
+                        Download DOCX
+                    </a>
+                </div>
+                <button id="convertPdfBtn" class="convert-btn" disabled>
+                    <i class="fas fa-exchange-alt"></i>
+                    Convert to DOCX
+                </button>
+            </div>
+        </div>
+
+        <div class="tool-card" id="image-to-pdf">
+            <div class="tool-header">
+                <h3><i class="fas fa-image"></i> Image to PDF</h3>
+                <p>Convert your images to PDF format</p>
+            </div>
+            <div class="tool-content">
+                <form id="imageToPdfForm" class="upload-form">
+                    <input type="file" id="imageInput" accept="image/*" class="file-input">
+                    <label for="imageInput" id="imageFileLabel" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </form>
+                <div class="status-message" id="imageStatus"></div>
+                <div class="loading" id="imageLoading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Converting...</p>
+                </div>
+                <div class="result" id="imageResult">
+                    <a href="#" id="imageDownloadLink" class="download-link">
+                        <i class="fas fa-download"></i>
+                        Download PDF
+                    </a>
+                </div>
+                <button id="convertImageBtn" class="convert-btn" disabled>
+                    <i class="fas fa-exchange-alt"></i>
+                    Convert to PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="tool-card" id="pdf-to-image">
+            <div class="tool-header">
+                <h3><i class="fas fa-file-image"></i> PDF to Image</h3>
+                <p>Convert your PDF files to images</p>
+            </div>
+            <div class="tool-content">
+                <form id="pdfToImageForm" class="upload-form">
+                    <input type="file" id="pdfToImageInput" accept=".pdf" class="file-input">
+                    <label for="pdfToImageInput" id="pdfToImageFileLabel" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click Here to Select a File</span>
+                    </label>
+                </form>
+                <div class="status-message" id="pdfToImageStatus"></div>
+                <div class="loading" id="pdfToImageLoading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Converting...</p>
+                </div>
+                <div class="result" id="pdfToImageResult">
+                    <a href="#" id="pdfToImageDownloadLink" class="download-link">
+                        <i class="fas fa-download"></i>
+                        Download Image
+                    </a>
+                </div>
+                <button id="convertPdfToImageBtn" class="convert-btn" disabled>
+                    <i class="fas fa-exchange-alt"></i>
+                    Convert to Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize mammoth.js
+        function initializeMammoth() {
+            return new Promise((resolve, reject) => {
+                if (typeof mammoth !== 'undefined') {
+                    console.log('mammoth.js initialized successfully');
+                    resolve();
+                    return;
+                }
+
+                // Try to load from CDN
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+                
+                script.onload = function() {
+                    if (typeof mammoth !== 'undefined') {
+                        console.log('mammoth.js loaded successfully');
+                        resolve();
+                    } else {
+                        reject(new Error('Failed to load mammoth.js library'));
+                    }
+                };
+                
+                script.onerror = function() {
+                    reject(new Error('Failed to load mammoth.js library'));
+                };
+                
+                document.head.appendChild(script);
+            });
+        }
+
+        // Initialize when the page loads
+        window.addEventListener('load', function() {
+            initializeMammoth().catch(error => {
+                console.error('Error loading mammoth.js:', error);
+                // Show error to user
+                const status = document.getElementById('docxStatus');
+                if (status) {
+                    status.textContent = 'Error: Failed to load document conversion library. Please refresh the page.';
+                    status.className = 'conversion-status error';
+                }
+            });
+        });
+    </script>
+    <script src="../js/main.js"></script>
+    <script src="../js/file-conversion.js"></script>
+</body>
+</html> 
